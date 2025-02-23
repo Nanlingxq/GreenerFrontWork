@@ -1,0 +1,107 @@
+  .service-portal {
+    height: 550px;
+    width: 1200px;
+    font-family: Arial, sans-serif;
+    border-color: transparent;
+    background-color: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+    justify-content: center;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #128e71;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .stats {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .stat-item {
+    text-align: center;
+  }
+  
+  .icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+  .count {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .login {
+    background-color: white;
+    color: #00aaff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .main-content {
+    height: 330px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .hot-services,
+  .public-services,
+  .featured-services {
+    background-color: rgba(4, 135, 85, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* height: 200px;
+    width: 150px; */
+  }
+
+  .imageColum {
+    height: 320px;
+    width: 275px;
+    object-fit: cover;
+  }
+  
+  h2 {
+    margin-top: 0;
+    color: #00aaff;
+    border-bottom: 2px solid #00aaff;
+    padding-bottom: 10px;
+  }
+  
+  .service-item {
+    text-align: center;
+    margin: 10px 0;
+  }
+  
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .grid-item {
+    text-align: center;
+  }

@@ -1,0 +1,99 @@
+.body{
+    background: linear-gradient(to bottom, darkgreen, rgb(195, 247, 195));
+  background-size: cover; /* 背景图像覆盖整个容器 */
+  background-attachment: fixed;
+  min-height: 100vh; /* 确保背景覆盖整个视口 */
+  box-sizing: border-box; /* 避免内边距和边框影响尺寸 */
+  background-repeat: repeat-y;
+}
+
+.bodyContainer {
+    display: flex;
+    width: 100%; 
+    height: 600px;
+    justify-content: space-between;
+}
+
+.imageContainer {
+    /* background-color: aqua;  */
+    height: 40%; 
+    overflow-y: hidden; 
+}
+
+.common-layout02 {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    height: 100vh;
+    margin: 0 auto;
+    width: 90%;
+  }
+
+.common-layout02 .el-header{
+    align-items: center;
+    text-align: center;    
+}
+
+.common-layout01 {
+    display:flex;   
+    margin: 0 auto;
+    width: 90%;
+    height: auto;
+}
+
+.mainImage {
+    width: 60%; 
+    height: 100%; 
+    overflow-y: hidden;
+    object-fit: cover;
+}
+
+.mainImage .mainImageBox {
+    width: 100%;
+    height: 100%;
+    /* object-fit: cover; */
+}
+
+.title {
+    font-size: xx-large;
+    line-height: 1.5;
+    letter-spacing: 2px
+}
+
+.hint {
+    font-size: larger;
+    letter-spacing: 6px;
+}
+
+.header1 {
+    height: 100px; /* 设置适当的高度 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+.icon {
+    width: 180px;
+    height: 180px;
+    justify-content: center;  
+    align-items: center; 
+}
+
+.discription1 {
+    font-size: x-large;
+}
+
+.discription2 {
+    font-size: x-large;
+}
+
+.column {
+    align-items: center;
+    justify-items: center;
+}
+
+.carousel {
+    height: 800px;
+}

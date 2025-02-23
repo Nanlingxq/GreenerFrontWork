@@ -107,6 +107,12 @@ import { loginStore } from '../store/loginStore'
 import { onMounted } from '@vue/runtime-core'
 import { createRouter } from 'vue-router'
 
+// onMounted(() => {
+//   // 如果需要，添加逻辑判断，比如仅在特定条件下刷新
+//   location.reload(); // 强制刷新页面
+// });
+
+
 const loginForm = reactive({
   username: '',
   password: ''
@@ -135,6 +141,24 @@ const rules = reactive({
 })
 
 const router = useRouter()
+const hasBeenRefresh = ref(false)
+
+// onMounted(() => {
+//   watch(
+//     () => router.path,
+//     (newPath) => {
+//       if(!hasBeenRefresh.value && newPath === '/') {
+//         refreshPage()
+//         hasBeenRefresh.value = true
+//       }
+//     },
+//     {immediate: true}
+//   )
+// })
+
+const refreshPage = () => {
+    window.location.reload()
+}
 
 const MySwitch = () => {
   const store = loginStore()
@@ -177,6 +201,8 @@ const register = () => {
     }
   })
 }
+
+
 </script>
 
 <style scoped>

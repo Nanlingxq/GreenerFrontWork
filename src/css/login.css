@@ -5,6 +5,7 @@ input {
   
   .bigBox {
     /* 溢出隐藏 */
+    width: 100%;
     height: 100vh;
     overflow-x: hidden;
     display: flex;
@@ -14,8 +15,8 @@ input {
   
   /* 最外层的大盒子 */
   .box {
-    width: 1050px;
-    height: 600px;
+    width: 60%;
+    height: 70%;
     display: flex;
     /* 相对定位 */
     position: relative;
@@ -84,7 +85,7 @@ input {
     /* 设置用户禁止选中 */
     user-select: none;
     overflow: hidden;
-    box-shadow: 4px 4px 3px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 4px 4px 3px rgba(0, 0, 0, 0.1); */
   }
   
   /* 图片 */

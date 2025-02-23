@@ -1,4 +1,3 @@
-// src/store/loginStore.ts
 import { defineStore } from 'pinia';
 
 export const loginStore = defineStore('loginStore', {
@@ -10,5 +9,5 @@ export const loginStore = defineStore('loginStore', {
             this.flag = !this.flag;
         },
     },
-    persist: true,
+    // persist: true,
 });
