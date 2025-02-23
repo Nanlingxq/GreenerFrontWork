@@ -11,5 +11,7 @@ export default defineConfig({
     },
   },
   base:'/GreenerFrontWork/',
-
+  build: {
+    outDir: "docs"
+  }
 });
