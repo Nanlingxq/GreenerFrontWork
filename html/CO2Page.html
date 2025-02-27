@@ -5,6 +5,55 @@
     <title>畅行秘籍速览</title>
     <!-- 绑定外部样式表 -->
     <link rel="stylesheet" type="text/css" href="StyleSheet.css" />
+    <style type="text/css">
+        #Button1 {
+            width: 318px;
+        }
+        /* 添加样式用于政策表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        /* 政策详情模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -15,17 +64,37 @@
     <!-- 轮播图部分 -->
     <section class="carousel">
         <div class="slides">
-            <img src="image/交通碳中和.png" alt="轮播图1" class="slide active" />
-            <img src="image/交通碳中和.png" alt="轮播图2" class="slide" />
-            <img src="image/交通碳中和.png" alt="轮播图3" class="slide" />
+            <!-- 第一张图片，链接到网址1 -->
+            <a href="https://index.caixin.com/2024-09-04/102233335.html" target="_blank">
+                <img src="image/交通碳中和.png" alt="轮播图1" class="slide active" />
+                <span class="slide-text">点击图片可直接跳转</span>
+            </a>
+            <!-- 第二张图片，链接到网址2 -->
+            <a href="http://www.tseit.org.cn/CN/10.16097/j.cnki.1009-6744.2024.06.001" target="_blank">
+                <img src="image/交通碳减排的任务与对策.png" alt="轮播图2" class="slide" />
+                <span class="slide-text">点击图片可直接跳转</span>
+            </a>
+            <!-- 第三张图片，链接到网址3 -->
+            <a href="https://www.cctp.org.cn/guandianguandian2023/2608.html" target="_blank">
+                <img src="image/道路交通.png" alt="轮播图3" class="slide" />
+                <span class="slide-text">点击图片可直接跳转</span>
+            </a>
         </div>
-        <button class="prev" onclick="prevSlide()">&#10094;</button>
-        <button class="next" onclick="nextSlide()">&#10095;</button>
     </section>
 
     <section class="quick-guide">
         <h2>畅行秘籍速览</h2>
         <div class="guide-container">
+            <!-- 政策与补贴信息 -->
+            <article class="guide-item">
+                <h3>政策与补贴信息</h3>
+                <ul>
+                    <li><strong>新能源汽车补贴：</strong><a href="https://www.gov.cn/zhengce//202306/content_6884761.htm">延续和优化新能源汽车车够税减免政策，激发消费潜力。</a></li>
+                    <li><strong>公共交通优惠：</strong><a href="https://news.qq.com/rain/a/20231110A0ABEN00">长三角交通领域“一码通行”正式启动 2024年，南京可与13座城市实现互联互通。</a></li>
+                    <li><strong>绿色出行奖励：</strong><a href="https://www.gov.cn/zhengce/zhengceku/2022-01/21/content_5669662.htm">交通运输部关于印发《绿色交通“十四五”发展规划》的通知。</a></li>
+                </ul>
+            </article>
+
             <!-- 绿色出行方式推荐 -->
             <article class="guide-item">
                 <h3>绿色出行方式推荐</h3>
@@ -37,8 +106,31 @@
                 </ul>
             </article>
 
-             <!-- 低碳出行小贴士 -->
-            <article class="guide-item">
+           <!-- 6张图片展示 -->
+            <div class="image-row">
+                <a href="https://csjsfqywtb.yddeltazwh.org.cn/wsdt/csjzwdt/newhome/pages/default/index.html" target="_blank" class="image-link">
+                    <img src="image/长三角一体化示范区专栏.png" alt="图片1" class="image-item"/>
+                </a>
+                <a href="http://www.sh12345.gov.cn/" target="_blank" class="image-link">
+                    <img src="image/上海市市民服务热线.png" alt="图片2" class="image-item" />
+                </a>
+                <a href="https://www.jiemian.com/article/4315241.html" target="_blank" class="image-link">
+                    <img src="image/长三角交通一体化规划出炉.png" alt="图片3" class="image-item" />
+                </a>
+                <a href="http://www.yrdcpcn.org.cn/c198/20241225/i275267.phtml" target="_blank" class="image-link">
+                    <img src="image/数字赋能绿色低碳转型.png" alt="图片4" class="image-item" />
+                </a>
+                <a href="https://cn.chinadaily.com.cn/a/202209/22/WS632c2b53a310817f312ef613.html" target="_blank" class="image-link">
+                    <img src="image/智慧交通绿色低碳发展.png" alt="图片5" class="image-item" />
+                </a>
+                <a href="https://zjkfq.org.cn/newsinfo/3233884.html" target="_blank" class="image-link">
+                    <img src="image/长三角生态绿色一体化发展.png" alt="图片6" class="image-item" />
+                </a>
+            </div>
+
+           <!-- 低碳出行小贴士 -->
+            <!-- 修改：添加 new-row 类 -->
+            <article class="guide-item new-row"> 
                 <h3>低碳出行小贴士</h3>
                 <ul>
                     <li><strong>拼车出行：</strong>与同事、朋友拼车，减少车辆空驶率。</li>
@@ -49,77 +141,70 @@
             </article>
 
             <!-- 碳足迹计算工具 -->
-            <article class="guide-item">
+            <!-- 修改：添加 new-row 类 -->
+            <article class="guide-item new-row"> 
                 <h3>碳足迹计算工具</h3>
                 <p>使用我们的碳足迹计算器，估算您的出行碳排放量。</p>
-                <a href="#carbon-calculator" class="btn">立即计算</a>
+                <a href="http://www.zhongguosou.com/zonghe/tanJiSuan.aspx" class="btn">立即计算</a>
             </article>
 
-            <!-- 政策与补贴信息 -->
+            <!-- 新增：长三角交通碳减排政策汇总 -->
             <article class="guide-item">
-                <h3>政策与补贴信息</h3>
-                <ul>
-                    <li><strong>新能源汽车补贴：</strong>国家和地方的购车补贴政策。</li>
-                    <li><strong>公共交通优惠：</strong>票价优惠、月票等信息。</li>
-                    <li><strong>绿色出行奖励：</strong>通过低碳出行积累积分兑换奖励。</li>
-                </ul>
-            </article>
-
-            <!-- 成功案例分享 -->
-            <article class="guide-item">
-                <h3>成功案例分享</h3>
-                <ul>
-                    <li><strong>个人案例：</strong>市民通过绿色出行减少碳排放的真实故事。</li>
-                    <li><strong>城市案例：</strong>国内外城市推广低碳交通的成功经验。</li>
-                </ul>
-            </article>
-
-            <!-- 互动与参与 -->
-            <article class="guide-item">
-                <h3>互动与参与</h3>
-                <ul>
-                    <li><strong>绿色出行挑战：</strong>参与“每周少开一天车”或“骑行打卡”活动。</li>
-                    <li><strong>用户反馈：</strong>分享您的绿色出行建议和体验。</li>
-                </ul>
-            </article>
-
-            <!-- 科普知识 -->
-            <article class="guide-item">
-                <h3>科普知识</h3>
-                <ul>
-                    <li><strong>碳排放的影响：</strong>交通碳排放对环境和气候变化的影响。</li>
-                    <li><strong>碳中和概念：</strong>个人如何通过绿色出行为碳中和贡献力量。</li>
-                </ul>
-            </article>
-
-            <!-- 实用工具与资源 -->
-            <article class="guide-item">
-                <h3>实用工具与资源</h3>
-                <ul>
-                    <li><strong>绿色出行APP推荐：</strong>共享单车APP、公共交通查询APP等。</li>
-                    <li><strong>充电桩地图：</strong>新能源汽车充电桩位置查询服务。</li>
-                </ul>
-            </article>
-
-            <!-- 未来趋势 -->
-            <article class="guide-item">
-                <h3>未来趋势</h3>
-                <ul>
-                    <li><strong>智能交通：</strong>优化交通流量，减少拥堵和排放。</li>
-                    <li><strong>无人驾驶与低碳出行：</strong>无人驾驶技术在减少碳排放方面的潜力。</li>
-                </ul>
-            </article>
-
-            <!-- 趣味内容 -->
-            <article class="guide-item">
-                <h3>趣味内容</h3>
-                <ul>
-                    <li><strong>低碳出行小测试：</strong>测试您的出行习惯是否环保。</li>
-                    <li><strong>绿色出行表情包：</strong>趣味表情包，增加互动性和趣味性。</li>
-                </ul>
+                <h3>长三角地区交通碳减排政策汇总</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>发布地区</th>
+                            <th>发布时间</th>
+                            <th>政策类型</th>
+                            <th>政策名称</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 示例政策数据，可根据实际情况修改 -->
+                        <tr>
+                            <td>上海市</td>
+                            <td>2024年1月</td>
+                            <td>补贴措施</td>
+                            <td>上海市新能源汽车购置补贴政策</td>
+                            <td><button onclick="showPolicyDetails('上海市新能源汽车购置补贴政策', '该政策旨在鼓励市民购买新能源汽车，对符合条件的购车者给予一定金额的补贴。补贴标准根据车辆类型和续航里程等因素确定。具体实施细则可参考相关政府文件。')">查看详情</button></td>
+                        </tr>
+                        <tr>
+                            <td>江苏省</td>
+                            <td>2023年11月</td>
+                            <td>标准规范</td>
+                            <td>江苏省交通碳排放核算标准</td>
+                            <td><button onclick="showPolicyDetails('江苏省交通碳排放核算标准', '该标准规定了江苏省交通领域碳排放的核算方法和流程，为企业和相关部门进行碳排放核算提供了统一的规范。有助于准确掌握交通领域的碳排放情况，为制定减排政策提供数据支持。')">查看详情</button></td>
+                        </tr>
+                        <tr>
+                            <td>浙江省</td>
+                            <td>2023年8月</td>
+                            <td>政策法规</td>
+                            <td>浙江省绿色交通发展条例</td>
+                            <td><button onclick="showPolicyDetails('浙江省绿色交通发展条例', '该条例明确了浙江省绿色交通发展的目标、任务和措施，对交通规划、建设、运营等各个环节提出了绿色低碳的要求。鼓励推广新能源交通工具，加强交通基础设施的节能减排建设。')">查看详情</button></td>
+                        </tr>
+                        <tr>
+                            <td>安徽省</td>
+                            <td>2024年3月</td>
+                            <td>补贴措施</td>
+                            <td>安徽省公共交通绿色升级补贴政策</td>
+                            <td><button onclick="showPolicyDetails('安徽省公共交通绿色升级补贴政策', '该政策针对安徽省公共交通企业，对其进行新能源车辆购置、充电桩建设等绿色升级项目给予补贴。以推动公共交通领域的节能减排，提高公共交通的绿色化水平。')">查看详情</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </article>
         </div>
     </section>
+
+    <!-- 新增：政策详情模态框 -->
+    <div id="policyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePolicyDetails()">&times;</span>
+            <h2 id="policyTitle"></h2>
+            <p id="policyDetails"></p>
+        </div>
+    </div>
 
     <footer>
         <p>&copy; 清风"e"路，"碳"享出行——长三角交通碳减排数字赋能平台. 版权所有.</p>
@@ -151,6 +236,31 @@
 
         // 自动轮播
         setInterval(nextSlide, 3000);
+
+        // 新增：显示政策详情模态框
+        function showPolicyDetails(title, details) {
+            const modal = document.getElementById('policyModal');
+            const policyTitle = document.getElementById('policyTitle');
+            const policyDetails = document.getElementById('policyDetails');
+
+            policyTitle.textContent = title;
+            policyDetails.textContent = details;
+            modal.style.display = "block";
+        }
+
+        // 新增：关闭政策详情模态框
+        function closePolicyDetails() {
+            const modal = document.getElementById('policyModal');
+            modal.style.display = "none";
+        }
+
+        // 新增：点击模态框外部关闭模态框
+        window.onclick = function(event) {
+            const modal = document.getElementById('policyModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
     </script>
 </body>
 </html>

@@ -53,27 +53,44 @@ header p {
 }
 
 .prev, .next {
+    border-style: none;
+    border-color: inherit;
+    border-width: medium;
     position: absolute;
-    top: 50%;
+    top: -2147483648px;
     transform: translateY(-50%);
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
-    border: none;
     padding: 10px;
     cursor: pointer;
     font-size: 18px;
 }
 
 .prev {
-    left: 10px;
+    left: 1596px;
+    height: 34px;
+    width: 258px;
 }
 
 .next {
     right: 10px;
+    height: 45px;
+    width: 126px;
 }
 
 .prev:hover, .next:hover {
     background-color: rgba(0, 0, 0, 0.8);
+}
+
+.slide-text {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgb(0, 128, 0);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
 /* 畅行秘籍速览板块 */
@@ -99,11 +116,173 @@ header p {
 }
 
 .guide-item {
-    flex: 1 1 calc(33.333% - 40px);
+    flex: 1 1 100%; /* 每行只显示一个 */
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: auto; /* 保持高度不变 */
+    max-height: 300px; /* 设置一个最大高度 */
+    overflow: hidden; /* 隐藏超出部分 */
+}
+
+.guide-item h3 {
+    font-size: 1.5em;
+    color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+.guide-item ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.guide-item ul li {
+    margin-bottom: 10px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 100px 10px 40px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+}
+/*6张图展示*/
+.image-row {
+    display: flex;
+    flex-wrap: wrap; /* 允许换行 */
+    gap: 10px; /* 图片之间的间距 */
+    margin-top: 20px; /* 与上方内容的间距 */
+}
+
+.image-item {
+    flex: 1 1 calc(100%); /* 每行显示3张，减去间距 */
+    max-width: calc(100%); /* 每张图片占1/3宽度，减去间距 */
+    height: auto; /* 高度自适应 */
+    border-radius: 10px; /* 圆角 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    overflow: hidden; /* 确保图片内容也遵循圆角 */
+}
+
+/* 新增：为 <a> 标签添加样式 */
+.image-link {
+    display: block; /* 使 <a> 标签成为块级元素 */
+    flex: 1 1 calc(1% - 10px); /* 与图片相同的宽度 */
+    max-width: calc(1% - 10px); /* 与图片相同的宽度 */
+    text-decoration: none; /* 去掉超链接的下划线 */
+    color: inherit; /* 继承父元素颜色 */
+}
+
+/* 确保 <a> 标签不影响布局 */
+.image-link {
+    display: block; /* 使 <a> 标签成为块级元素 */
+    flex: 1 1 calc(33% - 10px); /* 与图片相同的宽度 */
+    max-width: calc(33% - 10px); /* 与图片相同的宽度 */
+    text-decoration: none; /* 去掉超链接的下划线 */
+    color: inherit; /* 继承父元素颜色 */
+}
+#Button1 {
+            width: 200px;
+        }
+        /* 添加样式用于政策表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        /* 政策详情模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+/* 畅行秘籍速览板块 */
+.quick-guide {
+    padding: 20px;
+    background-color: white;
+    margin: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quick-guide h2 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #4CAF50;
+}
+
+.guide-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.guide-item {
+    flex: 1 1 100%; /* 每行只显示一个 */
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: auto; /* 保持高度不变 */
+    max-height: 300px; /* 设置一个最大高度 */
+    overflow: hidden; /* 隐藏超出部分 */
+}
+
+/* 修改：新增 new-row 类样式，让两个版块同行显示 */
+.guide-item.new-row {
+    flex: 1 1 calc(50% - 10px); /* 每行显示两个，减去间距 */
+    max-width: calc(50% - 10px); /* 每个元素占一半宽度，减去间距 */
+    box-sizing: border-box; /* 确保内边距和边框不会影响宽度计算 */
+    display: flex;
+    flex-direction: column;
 }
 
 .guide-item h3 {

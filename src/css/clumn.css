@@ -50,8 +50,8 @@
     font-weight: bold;
   }
   
-  .login {
-    background-color: white;
+  .Button {
+    background-color: transparent;
     color: #00aaff;
     padding: 5px 10px;
     border-radius: 5px;
@@ -67,7 +67,6 @@
   }
   
   .hot-services,
-  .public-services,
   .featured-services {
     background-color: rgba(4, 135, 85, 0.3);
     padding: 20px;
@@ -77,10 +76,81 @@
     width: 150px; */
   }
 
+  .public-services {
+    background-color: rgba(4, 135, 85, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
   .imageColum {
     height: 320px;
     width: 275px;
     object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .imageColumNew {
+    height: 155px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  @keyframes scrollAsummption {
+    0% {transform: translateX(0);}
+    100% {transform: translateX(-100%);}
+  }
+
+  .imageAssumption {
+    display: flex;
+    align-items: center;
+    height: 25px;
+    width: 450px;
+    overflow: hidden;
+  }
+
+  .assumptionTitle {
+    width: 50px;
+    font-size: large;
+    font-weight: 800;
+    margin-right: 10px;
+    white-space: nowrap;
+    /* background-color: white;  */
+  }  
+
+  .imageAssumption > div {
+    width: 400px;
+    display:inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    /* background-color: #00aaff; */
+  }
+
+  .imageAssumption > div > div {
+    animation: scrollAsummption 15s linear infinite;
+  }
+
+  @keyframes scrollText {
+    0% {transform: translateY(0);}
+    100% {transform: translateY(-100%);}
+  }
+
+  .imageDiscription {
+    display:inline-block;
+    height: 140px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .imageDiscription > div {
+    display: block;
+    /* white-space: ; */
+    animation:scrollText 15s linear infinite;
+  }
+
+  .discriptionTitle {
+    font-size: large;
+    font-weight: 800;
   }
   
   h2 {

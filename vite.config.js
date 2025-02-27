@@ -10,7 +10,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base:'/GreenerFrontWork/',
+  base:'./',
   build: {
     outDir: "docs"
   }
