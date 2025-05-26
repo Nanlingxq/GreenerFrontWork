@@ -1,0 +1,55 @@
+﻿City,Year.opened,Rides,System.length,Stations,Population,Systems,Country,RidePerPop,Continent
+Adana,2009,14000000,13.5,13,1249680,Adana Metro,Turkey,11.20286793,Europe
+Algiers,2011,13000000,9.2,10,1980242,Algiers Metro,Algeria,6.564854195,Africa
+Almaty,2011,7000000,8.5,7,1204820,Almaty Metro,Kazakhstan,5.809996514,Asia
+Amsterdam,1977,107700000,32.7,33,745811,Amsterdam Metro,Netherlands,144.4065588,Europe
+Ankara,1997,94400000,23.4,23,3519177,Ankara Metro,Turkey,26.82445356,Europe
+Hiroshima,1994,18500000,18.4,21,1143850,Astram Line,Japan,16.17344932,Asia
+Athens,1904,407000000,79.6,61,729139,Athens Metro,Greece,558.192608,Europe
+Baku,1967,195600000,34.6,23,1116513,Baku Metro,Azerbaijan,175.1882871,Asia
+Baltimore,1983,14600000,24.9,14,610892,Baltimore Metro Subway,United States,23.89947814,North America
+Barcelona,1924,448500000,125,166,1570378,Barcelona Metro,Spain,285.6000275,Europe
+San Francisco Bay Area,1972,117800000,167,44,7150000,BART,United States,16.47552448,North America
+Beijing,1971,3209000000,456,270,20693000,Beijing Subway,China,155.076596,Asia
+Belo Horizonte,1986,57400000,28.1,19,2373255,Belo Horizonte Metro,Brazil,24.18619154,South America
+Berlin,1902,902300000,483.7,336,3398362,Berlin S-Bahn / Berlin U-Bahn,Germany,265.5102664,Europe
+Bilbao,1995,87600000,43.31,41,349270,Bilbao Metro,Spain,250.8088298,Europe
+Brasília,2001,54750000,42.4,24,2207812,Brasília Metro,Brazil,24.7983071,South America
+Brussels,1976,132400000,39.9,59,1019022,Brussels Metro,Belgium,129.9285001,Europe
+Bucharest,1979,172600000,69.3,51,1877155,Bucharest Metro,Romania,91.94765483,Europe
+Budapest,1896,302400000,30.8,42,1708088,Budapest Metro,Hungary,177.0400588,Europe
+Buenos Aires,1913,310000000,47.1,68,2890151,Subterráneo de Buenos Aires,Argentina,107.2608317,South America
+Bursa,2002,91250000,31,31,1413485,Bursa Metro,Turkey,64.55675158,Europe
+Busan,1985,320400000,130.2,128,3590101,Busan Subway,South Korea,89.24540006,Asia
+Cairo,1987,837000000,69.8,60,7734602,Cairo Metro,Egypt,108.2150058,Africa
+Caracas,1983,484600000,54.2,47,1815681,Caracas Metro,Venezuela,266.8971036,South America
+Catania,1999,4100000,3.8,6,307331,Catania Metro,Italy,13.34066528,Europe
+Chengdu,2010,103000000,49.7,42,3950437,Chengdu Metro,China,26.07306483,Asia
+Chennai,1997,29200000,19,17,6500000,Chennai Mass Rapid Transit System,India,4.492307692,Asia
+Chicago,1897,231100000,180.3,145,2841952,Chicago 'L',United States,81.31734808,North America
+Chongqing,2005,310000000,93.3,41,3967028,Chongqing Rail Transit,China,78.14414216,Asia
+Copenhagen,1934,54300000,191,107,1089958,Copenhagen Metro / Copenhagen S-train,Denmark,49.81843337,Europe
+Daegu,1997,126500000,57.3,59,2527566,Daegu Subway,South Korea,50.04814909,Asia
+Daejeon,2006,38000000,22.7,22,1539154,Daejeon Subway,South Korea,24.68888753,Asia
+Dalian,2003,43800000,63,20,2035307,Dalian Metro,China,21.520095,Asia
+Delhi,2002,605900000,193,145,10928270,Delhi Metro,India,55.44335929,Asia
+Dnipropetrovsk,1995,8100000,7.8,6,1001612,Dnipropetrovsk Metro,Ukraine,8.086963814,Europe
+London,1863,1329000000,436,315,7421228,Docklands Light Railway / London Underground,United Kingdom,179.0808745,Europe
+Dubai,2009,109500000,75,47,1137376,Dubai Metro,United Arab Emirates,96.27423121,Asia
+Fortaleza,2012,600000,43,28,2416920,Fortaleza Metro,Brazil,0.248249839,South America
+Frankfurt,1968,117500000,64.9,86,648034,Frankfurt U-Bahn,Germany,181.3176469,Europe
+Fukuoka,1981,137200000,29.8,35,1483052,Fukuoka City Subway,Japan,92.51192811,Asia
+Genoa,1990,11000000,7,8,585815,Genoa Metro,Italy,18.77725903,Europe
+Glasgow,1896,12900000,10.4,15,610271,Glasgow Subway,United Kingdom,21.1381501,Europe
+Guangzhou,1997,1851000000,261,163,3152825,Guangzhou Metro,China,587.0925281,Asia
+Gwangju,2004,18000000,20.1,20,1471324,Gwangju Subway,South Korea,12.23387915,Asia
+Hamburg,1907,468000000,251,159,1733846,Hamburg S-Bahn / Hamburg U-Bahn,Germany,269.9201659,Europe
+Helsinki,1982,57300000,21.1,17,558457,Helsinki Metro,Finland,102.6041396,Europe
+Incheon,1999,89350000,29.4,29,2900898,Incheon Subway,South Korea,30.8008072,Asia
+Istanbul,2000,175000000,82.2,62,9797536,Istanbul Metro,Turkey,17.86163378,Europe
+Izmir,2000,62600000,16.1,14,2501895,Izmir Metro,Turkey,25.02103406,Europe
+Kaohsiung,2008,52100000,42.7,37,2769072,Kaohsiung Mass Rapid Transit,Taiwan,18.81496761,Asia
+Kazan,2005,26900000,15.8,10,1143535,Kazan Metro,Russia,23.5235476,Europe
+Kharkiv,1975,239300000,38.1,29,1442910,Kharkiv Metro,Ukraine,165.8454096,Europe
+Kiev,1960,526700000,67.5,52,2514227,Kiev Metro,Ukraine,209.4878466,Europe
+Kobe,1968,121000000,38.2,35,1528487,Kobe Municipal Subway / Kobe Rapid Railway,Japan,79.16325098,

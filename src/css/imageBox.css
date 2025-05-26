@@ -1,0 +1,87 @@
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    /* overflow: hidden; */
+  }
+  
+  .container .box {
+    position: relative;
+    width: 200px;
+    height: 200px; /* 设置固定高度 */
+    overflow: hidden;
+    transition: 0.5s;
+    border: '2px solid rgba(255, 255, 255, 0.8)';
+    border-radius: 8px;
+  }
+  
+  .container .box:hover {
+    transform: scale(1.2);
+    box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5);
+  }
+  
+  .container .box .image-box {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .container .box .image-box img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 确保图片填满整个模块 */
+    transition: filter 0.5s ease;
+  }
+  
+  .container .box:hover .image-box img {
+    filter: brightness(0.1);
+  }
+  
+  .container .box .text-box {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    display: flex;
+    align-items: flex-end;
+    color: #fff;
+    z-index: 2;
+  }
+  
+  .container .box .text-box h2 {
+    font-size: 20px;
+    margin-bottom: 50px;
+    transform: translateY(200px);
+    transition: 0.19s;
+  }
+  
+  .container .box:hover .text-box h2 {
+    transform: translateY(0);
+    transition-delay: 0.24s;
+  }
+  
+  .container .box .text-box p {
+    font-size: 10px;
+    line-height: 50px;
+    transform: translateY(200px);
+    transition: 0.2s;
+  }
+  
+  .container .box:hover .text-box p {
+    transform: translateY(0);
+    transition-delay: 0.18s;
+  }

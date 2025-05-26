@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>在线预约信息收集</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Helvetica Neue", sans-serif;
+      background: linear-gradient(to right, #e8f5e9, #c8e6c9);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 128, 0, 0.15);
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+      margin-bottom: 25px;
+      font-size: 26px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 15px;
+      color: #2e7d32;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #66bb6a;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #43a047;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 25px 0;
+    }
+
+    #successMessage {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+      color: #2e7d32;
+    }
+
+    #allAppointments {
+      margin-top: 20px;
+    }
+
+    .appointment-card {
+      background-color: #f1f8e9;
+      border: 1px solid #c5e1a5;
+      border-left: 5px solid #66bb6a;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    .appointment-card strong {
+      color: #388e3c;
+    }
+
+    .appointment-card button {
+      background-color: #ef5350;
+      margin-top: 10px;
+    }
+
+    .appointment-card button:hover {
+      background-color: #d32f2f;
+    }
+
+    .floating-buttons {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999;
+    }
+
+    .floating-buttons button {
+      font-size: 13px;
+      padding: 6px 10px;
+      background-color: #66bb6a;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.3s ease;
+    }
+
+    .floating-buttons button:hover {
+      background-color: #388e3c;
+    }
+
+    .hidden {
+      display: none;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.8); /* 背景色，可根据需求调整透明度 */
+      padding: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 悬浮按钮区 -->
+  <div class="floating-buttons">
+    <button onclick="toggleAppointments()">📋 查看预约</button>
+    <button onclick="exportAppointments()">⬇️ 导出数据</button>
+    <button onclick="clearAppointments()">🗑️ 清除全部</button>
+  </div>
+
+  <!-- 主容器 -->
+  <div class="container">
+    <h1>在线预约信息收集</h1>
+    <form id="bookingForm">
+      <label for="name">姓名：</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="phone">联系电话：</label>
+      <input type="tel" id="phone" name="phone" required pattern="^1[3-9]\d{9}$" />
+
+      <label for="date">预约日期：</label>
+      <input type="date" id="date" name="date" required />
+
+      <label for="time">预约时间：</label>
+      <input type="time" id="time" name="time" required />
+
+      <label for="reason">预约事项：</label>
+      <textarea id="reason" name="reason" rows="4" required></textarea>
+
+      <button type="submit">提交预约</button>
+    </form>
+    <div id="successMessage" class="hidden">🎉 预约成功！</div>
+    <div id="allAppointments" class="hidden"></div>
+  </div>
+
+  <script>
+    let appointmentsVisible = false;
+
+    document.getElementById("bookingForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+      const reason = document.getElementById("reason").value.trim();
+
+      if (!name || !phone || !date || !time || !reason) {
+        alert("请完整填写所有信息！");
+        return;
+      }
+
+      let appointments = JSON.parse(localStorage.getItem("appointments") || "[]");
+      appointments.push({ name, phone, date, time, reason });
+      localStorage.setItem("appointments", JSON.stringify(appointments));
+
+      const successMsg = document.getElementById("successMessage");
+      successMsg.classList.remove("hidden");
+      successMsg.textContent = "🎉 预约成功！";
+      setTimeout(() => {
+        successMsg.classList.add("hidden");
+      }, 3000);
+
+      this.reset();
+    });
+
+    function toggleAppointments() {
+      appointmentsVisible = !appointmentsVisible;
+      const container = document.getElementById("allAppointments");
+      if (appointmentsVisible) {
+        viewAppointments();
+        container.classList.remove("hidden");
+      } else {
+        container.classList.add("hidden");
+      }
+    }
+
+    function viewAppointments() {
+      const container = document.getElementById("allAppointments");
+      container.innerHTML = "";
+      const data = JSON.parse(localStorage.getItem("appointments") || "[]");
+
+      if (data.length === 0) {
+        container.innerHTML = "<p>暂无预约记录。</p>";
+        return;
+      }
+
+      data.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "appointment-card";
+        div.innerHTML = `
+          <strong>预约 ${index + 1}</strong><br>
+          姓名：${item.name}<br>
+          电话：${item.phone}<br>
+          日期：${item.date} 时间：${item.time}<br>
+          事项：${item.reason}<br>
+          <button onclick="deleteAppointment(${index})">删除本条预约</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function deleteAppointment(index) {
+      let appointments = JSON.parse(localStorage.getItem("appointments") || "[]");
+      if (confirm("确定删除这条预约吗？")) {
+        appointments.splice(index, 1);
+        localStorage.setItem("appointments", JSON.stringify(appointments));
+        viewAppointments();
+      }
+    }
+
+    function clearAppointments() {
+      if (confirm("确定要清除所有预约吗？")) {
+        localStorage.removeItem("appointments");
+        document.getElementById("allAppointments").innerHTML = "<p>所有预约已清除。</p>";
+      }
+    }
+
+    function exportAppointments() {
+      const data = JSON.parse(localStorage.getItem("appointments") || "[]");
+      if (data.length === 0) {
+        alert("当前没有预约记录可导出。");
+        return;
+      }
+
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "预约记录");
+      XLSX.writeFile(workbook, "预约记录.xlsx");
+    }
+  </script>
+   <div class="footer">
+    <p>© 2025 清风e路，碳享出行——长三角交通碳减排数字赋能平台</p>
+</div>
+</body>
+</html>

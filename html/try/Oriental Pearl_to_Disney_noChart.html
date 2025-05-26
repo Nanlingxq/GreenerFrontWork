@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_f3d093b65986cd82c0ec45f0bb480998 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+<div style="
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    background-color: rgba(255,255,255,0.95);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.25);
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.6;
+">
+<b>碳排放估算：</b><br>🚚 普通货车：6105.6 克 CO₂<br>🚛 集卡：7326.7 克 CO₂<br>🚜 渣土：7815.2 克 CO₂<br>🚚 罐车：6838.3 克 CO₂<br>🚌 客车：4396.0 克 CO₂<br>🚙 其它：4884.5 克 CO₂<br>🚌 公交：1953.8 克 CO₂<br>🚆 地铁：732.7 克 CO₂<br>🚲 自行车：0.0 克 CO₂<br>
+</div>
+    
+            <div class="folium-map" id="map_f3d093b65986cd82c0ec45f0bb480998" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_f3d093b65986cd82c0ec45f0bb480998 = L.map(
+                "map_f3d093b65986cd82c0ec45f0bb480998",
+                {
+                    center: [31.238, 121.4994],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 15,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_e7111e2b438dc7fe7750e84e34e2f660 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_e7111e2b438dc7fe7750e84e34e2f660.addTo(map_f3d093b65986cd82c0ec45f0bb480998);
+        
+    
+            var poly_line_a87c3a91614754e4aba5ed9b1e399598 = L.polyline(
+                [[31.2387117, 121.499587], [31.238737, 121.4992793], [31.2368254, 121.4993962], [31.2366471, 121.499409], [31.2365423, 121.4994249], [31.2346164, 121.4997182], [31.2345056, 121.4997293], [31.2326781, 121.5002431], [31.2324977, 121.5003603], [31.2321692, 121.5007661], [31.2294397, 121.5029738], [31.2285964, 121.5052239], [31.2270497, 121.5065216], [31.2227486, 121.5080948], [31.219037, 121.509803], [31.2135596, 121.5097164], [31.213477, 121.5098271], [31.2133121, 121.510253], [31.2125611, 121.5125399], [31.2124834, 121.5127059], [31.2114609, 121.5146332], [31.2106453, 121.5168136], [31.209968, 121.5213589], [31.2099668, 121.5215432], [31.2098853, 121.5242308], [31.2098031, 121.526621], [31.2097793, 121.5271871], [31.2097663, 121.5276168], [31.2097553, 121.5280853], [31.2094756, 121.532477], [31.2090188, 121.5351768], [31.2089768, 121.535362], [31.2064239, 121.5396182], [31.2020458, 121.5426249], [31.2016197, 121.5428388], [31.1977947, 121.5445958], [31.1958643, 121.5454655], [31.194324, 121.5461947], [31.1907456, 121.5483032], [31.1906202, 121.548374], [31.1873091, 121.5497331], [31.1853205, 121.5503903], [31.1831758, 121.5513007], [31.1825555, 121.5515665], [31.1824734, 121.5516025], [31.1768403, 121.5533843], [31.1732079, 121.555189], [31.1718913, 121.5558813], [31.1718032, 121.5559406], [31.1714606, 121.5561266], [31.1692194, 121.5573291], [31.1691541, 121.5573643], [31.1652661, 121.5588924], [31.1648322, 121.5589967], [31.1648498, 121.5592007], [31.1650976, 121.5610593], [31.1657178, 121.5650192], [31.1637118, 121.5664989], [31.1605741, 121.5674406], [31.1604739, 121.5674716], [31.1610531, 121.5700837], [31.1616306, 121.5724975], [31.1576999, 121.5872734], [31.1562616, 121.5879678], [31.1445273, 121.5917661], [31.1393509, 121.5938448], [31.1349597, 121.5959176], [31.1331282, 121.5967416], [31.1318143, 121.597252], [31.131732, 121.5976708], [31.1319501, 121.6017367], [31.1321035, 121.604603], [31.1323447, 121.6086537], [31.1325127, 121.6117376], [31.1325217, 121.6119052], [31.132794, 121.6166501], [31.133394, 121.6236871], [31.1338232, 121.6279174], [31.1338503, 121.6281221], [31.13458, 121.6352094], [31.1346036, 121.6356101], [31.1347241, 121.6373436], [31.1354694, 121.6441064], [31.1352586, 121.6448222], [31.132792, 121.648246], [31.1309601, 121.6489149], [31.1310852, 121.6496518], [31.1290164, 121.6507753], [31.1305893, 121.6496759], [31.1332003, 121.6487602], [31.1395832, 121.6465213]],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_f3d093b65986cd82c0ec45f0bb480998);
+        
+    
+            poly_line_a87c3a91614754e4aba5ed9b1e399598.bindTooltip(
+                `<div>
+                     推荐低碳路径
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_dddf54b472cced85763d8ea8617b931b = L.marker(
+                [31.238, 121.4994],
+                {
+}
+            ).addTo(map_f3d093b65986cd82c0ec45f0bb480998);
+        
+    
+            var icon_0df37d0def0900712908068446bbfa24 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a86564ea7eab7476f07710d2bdcb4b9f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_92cc7854d11653e216e32491e883c3cb = $(`<div id="html_92cc7854d11653e216e32491e883c3cb" style="width: 100.0%; height: 100.0%;">起点：人民广场</div>`)[0];
+                popup_a86564ea7eab7476f07710d2bdcb4b9f.setContent(html_92cc7854d11653e216e32491e883c3cb);
+            
+        
+
+        marker_dddf54b472cced85763d8ea8617b931b.bindPopup(popup_a86564ea7eab7476f07710d2bdcb4b9f)
+        ;
+
+        
+    
+    
+                marker_dddf54b472cced85763d8ea8617b931b.setIcon(icon_0df37d0def0900712908068446bbfa24);
+            
+    
+            var marker_b43ac302ef84d9d8f907d7a13607f9b9 = L.marker(
+                [31.142, 121.65],
+                {
+}
+            ).addTo(map_f3d093b65986cd82c0ec45f0bb480998);
+        
+    
+            var icon_2f383b719b0aa5910a2c82f81b9d94d0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_187f0e7457a8206fc7881ba920332467 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_972ceb88b0bd426ec089f0a4484de3db = $(`<div id="html_972ceb88b0bd426ec089f0a4484de3db" style="width: 100.0%; height: 100.0%;">终点：新天地</div>`)[0];
+                popup_187f0e7457a8206fc7881ba920332467.setContent(html_972ceb88b0bd426ec089f0a4484de3db);
+            
+        
+
+        marker_b43ac302ef84d9d8f907d7a13607f9b9.bindPopup(popup_187f0e7457a8206fc7881ba920332467)
+        ;
+
+        
+    
+    
+                marker_b43ac302ef84d9d8f907d7a13607f9b9.setIcon(icon_2f383b719b0aa5910a2c82f81b9d94d0);
+            
+    
+            tile_layer_e7111e2b438dc7fe7750e84e34e2f660.addTo(map_f3d093b65986cd82c0ec45f0bb480998);
+        
+    
+                marker_dddf54b472cced85763d8ea8617b931b.setIcon(icon_0df37d0def0900712908068446bbfa24);
+            
+    
+                marker_b43ac302ef84d9d8f907d7a13607f9b9.setIcon(icon_2f383b719b0aa5910a2c82f81b9d94d0);
+            
+</script>
+</html>

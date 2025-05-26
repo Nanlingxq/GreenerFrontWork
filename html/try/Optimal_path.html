@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路径输入与地图展示</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8f0; /* 绿色背景 */
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            color: #4CAF50;
+            margin-top: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .input-section {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        input, button {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            margin: 10px;
+            border: 2px solid #4CAF50;
+            outline: none;
+        }
+
+        input {
+            width: 300px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>路径规划与碳排放估算</h2>
+        <div class="input-section">
+            <label for="start"><span class="icon">📍</span>起点：</label>
+            <input type="text" id="start" placeholder="请输入起点" required>
+            <label for="end"><span class="icon">📍</span>终点：</label>
+            <input type="text" id="end" placeholder="请输入终点" required>
+            <button id="submitBtn">提交</button>
+            <p class="instruction">请输入起点和终点以查看最短路径和碳排放估算。</p>
+        </div>
+
+        <!-- 地图容器 -->
+        <div id="mapContainer"></div>
+
+        <!-- 全屏按钮容器 -->
+        <div id="fullscreenBtnContainer" style="text-align: center; margin-top: 15px;"></div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 清风e路，碳享出行——长三角交通碳监测赋能平台</p>
+    </div>
+
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', checkRoute);
+
+        function checkRoute() {
+            var start = document.getElementById('start').value;
+            var end = document.getElementById('end').value;
+            var iframeSrc = '';
+
+            if (start === '上海植物园' && end === '五角场') {
+                iframeSrc = './botanicalGarden_to_Wujiaochang.html';
+            } 
+            else if (start === '上海东方明珠' && end === '上海迪士尼乐园') {
+                iframeSrc = './Oriental_Pearl_to_Disney.html';
+            } 
+            else if (start === '人民广场' && end === '佘山国家森林公园') {
+                iframeSrc = './Square_to_SheHill.html';
+            } 
+            else if (start === '南京西路' && end === '崇明东滩湿地公园') {
+                iframeSrc = './nanjingWestRoad_to_ChongmingEastWetland.html';
+            } 
+            else {
+                alert("请输入正确的起点和终点！");
+                return;
+            }
+
+            // 创建 iframe
+            var iframe = document.createElement('iframe');
+            iframe.src = iframeSrc;
+            iframe.id = "mapIframe"; // 设置 ID 以便全屏调用
+            document.getElementById('mapContainer').innerHTML = '';
+            document.getElementById('mapContainer').appendChild(iframe);
+
+            // 添加全屏按钮
+            var btnHTML = '<button onclick="goFullscreen()" style="margin-top: 10px; padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;">全屏显示地图</button>';
+            document.getElementById('fullscreenBtnContainer').innerHTML = btnHTML;
+        }
+
+        function goFullscreen() {
+            var iframe = document.getElementById("mapIframe");
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) {
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) {
+                iframe.msRequestFullscreen();
+            }
+        }
+    </script>
+
+</body>
+</html>

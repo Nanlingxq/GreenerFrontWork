@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>GIF展示页面</title>
+    <style>
+        /* 居中布局 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+        }
+
+        /* GIF样式 */
+        .gif-container {
+            max-width: 800px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- 替换src中的路径为您的实际GIF路径 -->
+    <img 
+        class="gif-container"
+        src="combined_temporal.gif" 
+        alt="动态演示"
+        title="GIF动画"
+    >
+</body>
+</html>

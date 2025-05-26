@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <title>交通设施导览平台</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- 引入 Leaflet CSS样式 -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <!-- 引入 Font Awesome 图标库 -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+        <!-- 引入 Leaflet JS -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <style>
+            body, html {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
+            #map {
+                width: 100%;
+                height: 100%;
+            }
+            .control-panel {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 15px;
+                border-radius: 10px;
+                box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+                z-index: 1000;
+                font-size: 16px;
+                font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                color: #333;
+                line-height: 1.6;
+            }
+            .control-panel .panel-title {
+                display: flex;
+                align-items: center;
+                font-weight: bold;
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+            .control-panel .panel-title svg {
+                width: 20px;
+                height: 20px;
+                margin-right: 8px;
+                fill: #4CAF50;
+            }
+            .control-panel label {
+                display: flex;
+                align-items: center;
+                margin-top: 10px;
+                font-weight: 500;
+            }
+            .control-panel label i {
+                margin-right: 10px;
+                font-size: 20px;
+                color: #4CAF50;
+            }
+            .control-panel button {
+                width: 100%;
+                margin-top: 12px;
+                padding: 10px;
+                font-size: 15px;
+                border-radius: 6px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+            .control-panel button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div id="map"></div>
+    
+        <div class="control-panel">
+            <div class="panel-title">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 
+                             10 10 10 10-4.48 10-10S17.52 2 
+                             12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 
+                             8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6h2V7zm0 
+                             8h-2v2h2v-2z"/>
+                </svg>
+                交通设施筛选
+            </div>
+            <label>
+                <i class="fas fa-subway"></i> <input type="checkbox" id="metro" checked> 地铁站
+            </label>
+            <label>
+                <i class="fas fa-bus"></i> <input type="checkbox" id="bus" checked> 公交站
+            </label>
+            <label>
+                <i class="fas fa-bicycle"></i> <input type="checkbox" id="bike" checked> 自行车点
+            </label>
+            <label>
+                <i class="fas fa-charging-station"></i> <input type="checkbox" id="charge" checked> 充电站
+            </label>
+            <button onclick="updateLayers()">更新显示</button>
+        </div>
+        <style>
+            #streetViewContainer {
+                position: fixed;
+                bottom: 80px;
+                left: 20px;
+                z-index: 1000;
+            }
+    
+            #streetViewImage {
+                max-width: 200px;
+                max-height: 150px;
+                display: none;
+                border: 2px solid #ccc;
+                border-radius: 8px;
+                box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+            }
+    
+            #streetViewImages {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+    
+            #uploadButton {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                z-index: 1000;
+                background-color: #2196F3;
+                color: white;
+                padding: 10px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+    
+            /* 禁用默认输入框样式 */
+            input[type="file"] {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+    
+        <!-- 上传街景按钮 -->
+        <div id="uploadButton" onclick="startUpload()">
+            📷 上传街景地图
+        </div>
+    
+        <!-- 图片展示区域 -->
+        <div id="streetViewContainer">
+            <img id="streetViewImage" src="" alt="街景图像">
+        </div>
+    
+        <!-- 上传文件夹选择 -->
+        <input type="file" id="streetViewUpload" accept="image/*" webkitdirectory onchange="displayStreetView(event)">
+    
+        <!-- 图片展示容器 -->
+        <div id="streetViewImages"></div>
+    
+        <script>
+            // 函数：启动定位和文件上传流程
+            function startUpload() {
+                // 使用 geolocation API 获取用户当前位置
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        alert(`当前位置：纬度 ${lat}, 经度 ${lng}。定位成功，您可以上传街景地图！`);
+                        // 定位成功后，弹出文件上传框
+                        document.getElementById('streetViewUpload').click();
+                    }, function(error) {
+                        alert("定位失败，请检查浏览器权限设置。");
+                    });
+                } else {
+                    alert("您的浏览器不支持地理定位。");
+                }
+            }
+    
+            // 函数：显示上传的街景图
+            function displayStreetView(event) {
+                const files = event.target.files;
+                if (files.length === 0) return;
+    
+                // 清空之前的图片显示
+                const imgContainer = document.getElementById('streetViewImages');
+                imgContainer.innerHTML = '';
+    
+                // 遍历选择的文件
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+    
+                    // 确保文件是图片类型
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.width = '100px'; // 限制显示图片的宽度
+                            img.style.height = '100px'; // 限制显示图片的高度
+                            imgContainer.appendChild(img); // 添加图片到容器中
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            }
+        </script>
+
+
+        <!-- 引入 Leaflet JS -->
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script>
+            function updateLayers() {
+                const selected = [];
+                if (document.getElementById('metro').checked) selected.push('地铁站');
+                if (document.getElementById('bus').checked) selected.push('公交站');
+                if (document.getElementById('bike').checked) selected.push('自行车点');
+                if (document.getElementById('charge').checked) selected.push('充电站');
+                alert("你选择了显示：" + selected.join('、'));
+                // 此处可调用地图相关逻辑
+            }
+        </script>
+              
+    </body>
+    
+    
+    <script>
+        // 初始化地图
+        var map = L.map('map').setView([31.2304, 121.4737], 12); // 设置初始视野范围为上海
+
+        // 添加底图（使用 OpenStreetMap）
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '地图数据 © OpenStreetMap 贡献者'
+        }).addTo(map);
+
+        // 创建各类图层
+        var layers = {
+            metro: L.layerGroup(),
+            bus: L.layerGroup(),
+            bike: L.layerGroup(),
+            charge: L.layerGroup()
+        };
+
+        // 上海地铁站数据（手动添加）
+        var shanghaiMetroStations = [
+            {"name": "人民广场地铁站", "lat": 31.2304, "lon": 121.4737, iframeSrc: './人民广场.jpg',"address": "人民广场上海市黄浦区人民大道185号"},
+            {"name": "上海火车站", "lat": 31.255146, "lon": 121.463969, iframeSrc: './上海火车站.jpg',address:"上海市静安区秣陵路303号"},
+            {"name": "上海南站", "lat": 31.1503, "lon": 121.4365, iframeSrc: './上海南站.jpg',address:"上海市徐汇区沪闵路1111号"},
+            {"name": "虹桥火车站", "lat": 31.195204, "lon": 121.325929, iframeSrc: './虹桥火车站.jpg',address:"上海市闵行区申长路168号"},
+            {"name": "浦东国际机场", "lat": 31.1439, "lon": 121.8054, iframeSrc: './浦东国际机场.jpg',address:"上海市浦东新区机场大道800号"},
+            {"name": "虹桥国际机场", "lat": 31.2002, "lon": 121.3366, iframeSrc: './虹桥国际机场.jpg',address:"上海市虹桥路2555号"},
+                {
+        "name": "徐家汇",
+        "lat": 31.1901,
+        "lon": 121.4378,
+        "iframeSrc": "./徐家汇.jpg",
+        "address": "上海市徐汇区肇嘉浜路1000号"
+    },
+    {
+        "name": "上海火车站",
+        "lat": 31.2404,
+        "lon": 121.4695,
+        "iframeSrc": "./上海火车站.jpg",
+        "address": "上海市静安区秣陵路303号"
+    },
+    {
+        "name": "南京东路",
+        "lat": 31.2386,
+        "lon": 121.4804,
+        "iframeSrc": "./南京东路.jpg",
+        "address": "上海市黄浦区南京东路步行街"
+    },
+    {
+        "name": "惠南",
+        "lat": 31.059629,
+        "lon": 121.768265,
+        "iframeSrc": "./惠南.jpg",
+        "address": "上海市浦东新区惠南镇人民西路1号"
+    },
+    {
+        "name": "迪士尼",
+        "lat": 31.147572,
+        "lon": 121.674468,
+        "iframeSrc": "./迪士尼.jpg",
+        "address": "上海市浦东新区川沙新镇黄赵路310号"
+    },
+    {
+        "name": "曹路",
+        "lat": 31.277548,
+        "lon": 121.689449,
+        "iframeSrc": "./曹路.jpg",
+        "address": "上海市浦东新区曹路镇民春路500号"
+    },
+    {
+        "name": "五角场",
+        "lat": 31.303803,
+        "lon": 121.52119,
+        "iframeSrc": "./五角场.jpg",
+        "address": "上海市杨浦区淞沪路388号"
+    },
+    {
+        "name": "大柏树",
+        "lat": 31.295206,
+        "lon": 121.489755,
+        "iframeSrc": "./大柏树.jpg",
+        "address": "上海市杨浦区邯郸路100号"
+    },
+    {
+        "name": "江湾体育场",
+        "lat": 31.309713,
+        "lon": 121.520054,
+        "iframeSrc": "./江湾体育场.jpg",
+        "address": "上海市杨浦区清源环路650号"
+    },
+    {
+        "name": "市光路",
+        "lat": 31.328749,
+        "lon": 121.538509,
+        "iframeSrc": "./市光路.jpg",
+        "address": "上海市杨浦区市光路220号"
+    },
+    {
+        "name": "江湾镇",
+        "lat": 31.311313,
+        "lon": 121.491735,
+        "iframeSrc": "./江湾镇.jpg",
+        "address": "上海市杨浦区政立路500号"
+    },
+            {"name": "豫园", "lat": 31.234415, "lon": 121.494468},
+            {"name": "嫩江路", "lat": 31.320923, "lon": 121.538558},
+            {"name": "浦东1号2号航站楼", "lat": 31.156559, "lon": 121.812528},
+            {"name": "友谊路", "lat": 31.410039, "lon": 121.482385},
+            {"name": "宝杨路", "lat": 31.401162, "lon": 121.486198},
+            {"name": "野生动物园", "lat": 31.056471, "lon": 121.705734},
+            {"name": "外高桥保税区南", "lat": 31.327472, "lon": 121.608533},
+            {"name": "三门路", "lat": 31.318846, "lon": 121.514766},
+            {"name": "嘉定北", "lat": 31.397408, "lon": 121.24401},
+            {"name": "陆家嘴", "lat": 31.242201, "lon": 121.509106},
+            {"name": "新场", "lat": 31.051514, "lon": 121.655561},
+            {"name": "殷高西路", "lat": 31.325554, "lon": 121.49148},
+            {"name": "人民广场", "lat": 31.238703, "lon": 121.480838},
+            {"name": "翔殷路", "lat": 31.311024, "lon": 121.538472},
+            {"name": "延吉中路", "lat": 31.294434, "lon": 121.541389},
+            {"name": "淞虹路", "lat": 31.223954, "lon": 121.36601},
+            {"name": "长江南路", "lat": 31.337736, "lon": 121.497238},
+            {"name": "静安寺", "lat": 31.229037, "lon": 121.453325},
+            {"name": "常熟路", "lat": 31.219814, "lon": 121.456681},
+            {"name": "南京西路", "lat": 31.235032, "lon": 121.467106,iframeSrc: './南京西路.jpg',address:"上海市静安区南京西路与石门一路交叉口附近"},
+            {"name": "国权路", "lat": 31.295052, "lon": 121.516963},
+            {"name": "五洲大道", "lat": 31.308616, "lon": 121.595889},
+            {"name": "东方体育中心", "lat": 31.159233, "lon": 121.487069},
+            {"name": "世纪大道", "lat": 31.234801, "lon": 121.533503},
+            {"name": "陕西南路", "lat": 31.221994, "lon": 121.465665},
+            {"name": "江苏路", "lat": 31.226557, "lon": 121.437714},
+            {"name": "汶水路", "lat": 31.298973, "lon": 121.456541},
+            {"name": "交通大学", "lat": 31.208455, "lon": 121.441066},
+            {"name": "娄山关路", "lat": 31.217953, "lon": 121.408456},
+            {"name": "上海财经大学", "lat": 31.31367, "lon": 121.502868},
+            {"name": "黄兴公园", "lat": 31.301776, "lon": 121.539682},
+            {"name": "张江高科", "lat": 31.207786, "lon": 121.594194},
+            {"name": "惠南东", "lat": 31.032831, "lon": 121.800265},
+            {"name": "静安寺(9号出口)", "lat": 31.228595, "lon": 121.455092},
+            {"name": "上海火车站", "lat": 31.255146, "lon": 121.463969},
+            {"name": "唐镇", "lat": 31.220411, "lon": 121.662702},
+            {"name": "宝安公路", "lat": 31.375804, "lon": 121.437463},
+            {"name": "天潼路", "lat": 31.250088, "lon": 121.488783},
+            {"name": "御桥", "lat": 31.164782, "lon": 121.577356},
+            {"name": "龙华中路", "lat": 31.190695, "lon": 121.463296},
+            {"name": "民雷路", "lat": 31.274648, "lon": 121.674604},
+            {"name": "远东大道", "lat": 31.205141, "lon": 121.76203},
+            {"name": "秀沿路", "lat": 31.143945, "lon": 121.605058},
+            {"name": "华夏东路", "lat": 31.202995, "lon": 121.687321},
+            {"name": "共富新村", "lat": 31.36141, "lon": 121.440526},
+            {"name": "复旦大学", "lat": 31.301796, "lon": 121.50635},
+            {"name": "双江路", "lat": 31.359768, "lon": 121.54603},
+            {"name": "航津路", "lat": 31.341308, "lon": 121.600537},
+            {"name": "港城路", "lat": 31.359385, "lon": 121.581298},
+            {"name": "淞发路", "lat": 31.350843, "lon": 121.507088},
+            {"name": "洲海路", "lat": 31.31831, "lon": 121.595921},
+            {"name": "宜山路", "lat": 31.192531, "lon": 121.433654},
+            {"name": "水产路", "lat": 31.387091, "lon": 121.494702},
+            {"name": "淞滨路", "lat": 31.37691, "lon": 121.499327},
+            {"name": "长寿路", "lat": 31.24672, "lon": 121.444768},
+            {"name": "国帆路", "lat": 31.345325, "lon": 121.519807},
+            {"name": "江杨北路", "lat": 31.414232, "lon": 121.446235},
+            {"name": "新江湾城", "lat": 31.334438, "lon": 121.51368},
+            {"name": "东靖路", "lat": 31.296646, "lon": 121.595386},
+            {"name": "安亭", "lat": 31.294334, "lon": 121.168605},
+            {"name": "基隆路", "lat": 31.357321, "lon": 121.597032},
+            {"name": "呼兰路", "lat": 31.346106, "lon": 121.444156},
+            {"name": "嘉定西", "lat": 31.383236, "lon": 121.234404},
+            {"name": "富锦路", "lat": 31.398541, "lon": 121.431087},
+            {"name": "通河新村", "lat": 31.337451, "lon": 121.447964},
+            {"name": "龙阳路", "lat": 31.208767, "lon": 121.563819},
+            {"name": "外高桥保税区北", "lat": 31.353846, "lon": 121.593472},
+            {"name": "张华浜", "lat": 31.363487, "lon": 121.505389},
+            {"name": "抚顺路", "lat": 31.289494, "lon": 121.522328},
+            {"name": "殷高东路", "lat": 31.327541, "lon": 121.513561},
+            {"name": "上海国际旅游度假区", "lat": 31.162511, "lon": 121.685572},
+            {"name": "铁力路", "lat": 31.414283, "lon": 121.467683},
+            {"name": "大柏树站", "lat": 31.295338, "lon": 121.489788},
+            {"name": "高桥", "lat": 31.359008, "lon": 121.569835},
+            {"name": "赵巷(地铁站)", "lat": 31.167577, "lon": 121.198676},
+            {"name": "人民广场(15号口)", "lat": 31.238299, "lon": 121.48275},
+            {"name": "共青森林公园", "lat": 31.321271, "lon": 121.552427},
+            {"name": "松江新城站", "lat": 31.036599, "lon": 121.237403},
+            {"name": "裕安", "lat": 31.529457, "lon": 121.870863},
+            {"name": "桂桥路", "lat": 31.254892, "lon": 121.641799},
+            {"name": "美兰湖", "lat": 31.407852, "lon": 121.356426},
+            {"name": "罗南新村", "lat": 31.39451, "lon": 121.364047},
+            {"name": "淮海中路", "lat": 31.226197, "lon": 121.470677},
+            {"name": "川沙", "lat": 31.192843, "lon": 121.704431},
+            {"name": "嘉定西", "lat": 31.382622, "lon": 121.23448},
+            {"name": "5号线萧塘站", "lat": 30.9722, "lon": 121.448323},
+            {"name": "高桥西", "lat": 31.357833, "lon": 121.555939},
+            {"name": "友谊西路", "lat": 31.387459, "lon": 121.434421},
+            {"name": "金沙江路站", "lat": 31.238353, "lon": 121.41965},
+            {"name": "殷高路", "lat": 31.32721, "lon": 121.502087},
+            {"name": "长兴岛", "lat": 31.397998, "lon": 121.729393},
+            {"name": "浦东1号2号航站楼", "lat": 31.156442, "lon": 121.812289},
+            {"name": "通南路", "lat": 31.343456, "lon": 121.486412},
+            {"name": "高宝路", "lat": 31.296022, "lon": 121.631968},
+            {"name": "罗山路站", "lat": 31.159204, "lon": 121.599607},
+            {"name": "龙漕路(地铁站)", "lat": 31.175922, "lon": 121.45084},
+            {"name": "蓝村路", "lat": 31.217555, "lon": 121.532944},
+            {"name": "凌空北路", "lat": 31.299943, "lon": 121.678903},
+            {"name": "上海体育大学", "lat": 31.320596, "lon": 121.529578},
+            {"name": "上海财经大学", "lat": 31.313675, "lon": 121.504129},
+            {"name": "长江西路", "lat": 31.352078, "lon": 121.481604},
+            {"name": "江湾镇", "lat": 31.313706, "lon": 121.493579},
+            {"name": "金运路站(8号口)", "lat": 31.247668, "lon": 121.326092},
+            {"name": "嘉松中路站", "lat": 31.170149, "lon": 121.230346},
+            {"name": "滨海森林公园", "lat": 30.978955, "lon": 121.91493},
+            {"name": "龙阳路", "lat": 31.209765, "lon": 121.563227},
+            {"name": "康文路", "lat": 31.341768, "lon": 121.426219},
+            {"name": "虹湾路", "lat": 31.318267, "lon": 121.47439},
+            {"name": "金闻路", "lat": 31.123986, "lon": 121.781066},
+            {"name": "一二八纪念路", "lat": 31.334831, "lon": 121.473749},
+            {"name": "唐黄路", "lat": 31.150329, "lon": 121.691963},
+            {"name": "星海湾路", "lat": 30.960492, "lon": 121.94759},
+            {"name": "上海宝山站", "lat": 31.410471, "lon": 121.452678},
+            {"name": "呼兰路", "lat": 31.346126, "lon": 121.442907},
+            {"name": "闻居路", "lat": 31.137171, "lon": 121.770929},
+            {"name": "广灵四路", "lat": 31.292078, "lon": 121.472225},
+            {"name": "江杨南路", "lat": 31.355993, "lon": 121.473032},
+            {"name": "鹏翔路", "lat": 31.08078, "lon": 121.851121},
+            {"name": "万安路", "lat": 31.307126, "lon": 121.48273},
+            {"name": "长江南路", "lat": 31.337625, "lon": 121.496295},
+            {"name": "地铁时代广场", "lat": 31.291798, "lon": 121.187762},
+            {"name": "三门路", "lat": 31.318751, "lon": 121.517218},
+            {"name": "长兴岛", "lat": 31.398114, "lon": 121.72938},
+            {"name": "泰和路", "lat": 31.370073, "lon": 121.473739},
+            {"name": "上海轨道交通20号线土建4标", "lat": 31.27569, "lon": 121.436027},
+            {"name": "铁山路", "lat": 31.390206, "lon": 121.463253},
+            {"name": "车站北路", "lat": 31.302863, "lon": 121.473639},
+            {"name": "呼玛东路", "lat": 31.34961, "lon": 121.471051},
+            {"name": "铁通路", "lat": 31.398216, "lon": 121.458882},
+            {"name": "11号线康恒路-1号口", "lat": 31.16094, "lon": 121.560458},
+            {"name": "浦东3号航站楼", "lat": 31.124795, "lon": 121.824557},
+            {"name": "兰岗路", "lat": 31.383705, "lon": 121.467404},
+            {"name": "嫩江路", "lat": 31.320713, "lon": 121.537519},
+            {"name": "东靖路", "lat": 31.297553, "lon": 121.596021},
+            {"name": "上海东站", "lat": 31.125375, "lon": 121.786381},
+            {"name": "车站南路", "lat": 31.29893, "lon": 121.483526},
+            {"name": "浦东3号航站楼", "lat": 31.125167, "lon": 121.825301},
+            {"name": "莘庄综合交通枢纽", "lat": 31.11483, "lon": 121.393927},
+            {"name": "江杨北路站", "lat": 31.41419, "lon": 121.44642},
+            {"name": "莘庄综合交通枢纽", "lat": 31.11483, "lon": 121.393927}
+        ];
+            // 继续添加其他地铁站
+        
+        //定义图标样式
+        
+        const blueSubwayIcon = L.divIcon({
+        html: `
+            <div style="
+            background-color: white;
+            border: 2px solid blue;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            ">
+            <i class="fa fa-subway" style="color:blue; font-size: 12px;"></i>
+            </div>
+        `,
+        className: '',
+        iconSize: [28, 28]
+        });
+
+            // 添加上海地铁站点到地图
+            function addMetroStations() {
+            shanghaiMetroStations.forEach(function (station) {
+                var marker = L.marker([station.lat, station.lon], { icon: blueSubwayIcon })
+                   .bindPopup(`<b>${station.name}</b><br>${station.address}<br><img src="${station.iframeSrc}" alt="${station.name} 图片" style="max-width: 200px;">`);
+                marker.addTo(layers.metro);
+            });
+        }
+
+        // 默认加载上海地铁站数据
+        addMetroStations();
+
+        function updateLayers() {
+        // 检查每个复选框的状态，并根据状态更新图层
+            if (document.getElementById('metro').checked) {
+                layers.metro.addTo(map);
+            } else {
+                layers.metro.removeFrom(map);
+            }
+
+            if (document.getElementById('bus').checked) {
+                layers.bus.addTo(map);
+            } else {
+                layers.bus.removeFrom(map);
+            }
+
+            if (document.getElementById('bike').checked) {
+                layers.bike.addTo(map);
+            } else {
+                layers.bike.removeFrom(map);
+            }
+
+            if (document.getElementById('charge').checked) {
+                layers.charge.addTo(map);
+            } else {
+                layers.charge.removeFrom(map);
+            }
+        }
+
+        
+        //上海公交站数据
+        var shanghaiBustations = [
+        {"name": "上海虹桥站-公交站场", "lat": 31.195204, "lon": 121.325929},
+        {"name": "公交马陆站", "lat": 31.325892, "lon": 121.283669},
+        {"name": "西公交枢纽", "lat": 31.145592, "lon": 121.66581},
+        {"name": "上海南翔印象城MEGA-公交陈翔公路站", "lat": 31.311269, "lon": 121.313321},
+        {"name": "十六铺公交枢纽站", "lat": 31.23409, "lon": 121.502338},
+        {"name": "五洲大道公交枢纽", "lat": 31.30725, "lon": 121.595379},
+        {"name": "公交南翔站", "lat": 31.30301, "lon": 121.328303},
+        {"name": "南浦大桥浦西公交枢纽站", "lat": 31.213397, "lon": 121.507811},
+        {"name": "金山万达公交枢纽站", "lat": 30.762863, "lon": 121.340833},
+        {"name": "61路终点站(吴淞路天潼路)", "lat": 31.250681, "lon": 121.495788},
+        {"name": "漕溪路公交枢纽站", "lat": 31.185254, "lon": 121.443266},
+        {"name": "漕盈路站公交枢纽", "lat": 31.16704, "lon": 121.104443},
+        {"name": "上海市公安局城市轨道和公交总队", "lat": 31.223605, "lon": 121.421975},
+        {"name": "南公交枢纽", "lat": 31.138956, "lon": 121.674841},
+        {"name": "上海市公安局城市轨道和公交总队(民生路站治安派出所)", "lat": 31.2388, "lon": 121.551254},
+        {"name": "上海南站南广场-公交站场", "lat": 31.158787, "lon": 121.438926},
+        {"name": "公交嘉定新城站", "lat": 31.33724, "lon": 121.260702},
+        {"name": "中山公园(地铁站)", "lat": 31.223862, "lon": 121.422512},
+        {"name": "公交嘉定北站", "lat": 31.399154, "lon": 121.242582},
+        {"name": "上海公共交通卡服务中心(陆家浜路营业部)", "lat": 31.217133, "lon": 121.490767},
+        {"name": "上海市公安局城市轨道和公交分局虹桥综合交通枢纽治安派出所", "lat": 31.194335, "lon": 121.326111},
+        {"name": "春申公交枢纽站", "lat": 31.086331, "lon": 121.360937},
+        {"name": "公交178路终点站", "lat": 31.179487, "lon": 121.454668},
+        {"name": "松江大学城公交枢纽站", "lat": 31.061125, "lon": 121.239052},
+        {"name": "摆渡站(陆家浜路站)", "lat": 31.213395, "lon": 121.510994},
+        {"name": "浦东公交商城路公交枢纽", "lat": 31.236384, "lon": 121.523123},
+        {"name": "秀沿路慈桥路公交站(秀沿路3668号)", "lat": 31.143784, "lon": 121.623669},
+        {"name": "临港公交", "lat": 30.888524, "lon": 121.909994},
+        {"name": "上海京申大众公交重固站", "lat": 31.201091, "lon": 121.201399},
+        {"name": "松江公交(九里亭公交枢纽站)", "lat": 31.14972, "lon": 121.324849},
+        {"name": "长兴医院", "lat": 31.398805, "lon": 121.712617},
+        {"name": "二号机耕路", "lat": 31.580555, "lon": 121.653407},
+        {"name": "静安寺公交枢纽站", "lat": 31.23256, "lon": 121.453366},
+        {"name": "临港松江棕榈广场站", "lat": 31.099661, "lon": 121.331962},
+        {"name": "南汇公交中建民乐首末站", "lat": 31.066555, "lon": 121.741304},
+        {"name": "龙华中路公交枢纽站", "lat": 31.189231, "lon": 121.462049},
+        {"name": "中兴镇", "lat": 31.526077, "lon": 121.756469},
+        {"name": "嘉定公交新成路车站", "lat": 31.384759, "lon": 121.276228},
+        {"name": "摆渡站(宁国路站)", "lat": 31.262681, "lon": 121.549392},
+        {"name": "嘉定公交", "lat": 31.268685, "lon": 121.365752},
+        {"name": "公交712路(颛兴东路都市路-柳州路)", "lat": 31.076613, "lon": 121.414339},
+        {"name": "徐泾北城站公交枢纽", "lat": 31.181036, "lon": 121.24834},
+        {"name": "732路", "lat": 31.136317, "lon": 121.395847},
+        {"name": "上海公共交通卡服务中心(九江路营业部)", "lat": 31.2403, "lon": 121.485576},
+        {"name": "上海久事公共交通集团有限公司真南路公交停车保养场", "lat": 31.275105, "lon": 121.390174},
+        {"name": "下南路公交汽车站", "lat": 31.170664, "lon": 121.550421},
+        {"name": "上海南站-公交卡充值处", "lat": 31.158613, "lon": 121.436155},
+        {"name": "正嘉路(中运量)-公交车站", "lat": 30.868778, "lon": 121.773587},
+        {"name": "五建国家医学中心公交停车场项目部", "lat": 31.200306, "lon": 121.459459},
+        {"name": "久事公交", "lat": 31.247888, "lon": 121.477444},
+        {"name": "汇金路站", "lat": 31.166272, "lon": 121.16129},
+        {"name": "华新公交调度站", "lat": 31.254966, "lon": 121.209927},
+        {"name": "纪王汽车站", "lat": 31.243697, "lon": 121.277889},
+        {"name": "上海南站公交换乘信息牌(上海南站-南广场B1)", "lat": 31.158491, "lon": 121.436327},
+        {"name": "公交87路调度室", "lat": 31.180259, "lon": 121.453103}
+    ];
+
+            // 定义公交图标样式
+            const yellowBusIcon = L.divIcon({
+                html: `
+                    <div style="
+                        background-color: white;
+                        border: 2px solid yellow;
+                        border-radius: 50%;
+                        width: 28px;
+                        height: 28px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">
+                        <i class="fa fa-bus" style="color:yellow; font-size: 12px;"></i>
+                    </div>
+                `,
+                className: '',
+                iconSize: [28, 28]
+            });
+    
+    // 添加公交站点
+            function addBusStations() {
+                shanghaiBustations.forEach(function(station) {
+                    var marker = L.marker([station.lat, station.lon],{icon:yellowBusIcon})
+                        .bindPopup(`<b>${station.name}</b>`);
+                    marker.addTo(layers.bus);
+                });
+            }
+
+    addBusStations(); // 默认加载公交站数据
+
+     //添加自行车点
+        var shanghaiBikeStations = [
+        {"name": "TREK崔克自行车(陆家嘴店)", "lat": 31.246846, "lon": 121.51614},
+        {"name": "美利达自行车(浦江镇沈杜公路店)", "lat": 31.068125, "lon": 121.528535},
+        {"name": "TREK崔克自行车(碧云店)", "lat": 31.242124, "lon": 121.582503},
+        {"name": "美利达自行车(广兰路店)", "lat": 31.210402, "lon": 121.627429},
+        {"name": "二爷自行车专卖店(骑行驿站)", "lat": 31.163748, "lon": 121.213265},
+        {"name": "捷安特自行车(临港专卖店)", "lat": 30.888935, "lon": 121.921342},
+        {"name": "喜德盛自行车(泥城店)", "lat": 30.91148, "lon": 121.819172},
+        {"name": "坎普运动自行车上海直营店(松江店)", "lat": 31.118842, "lon": 121.267059},
+        {"name": "自行车维修点", "lat": 31.056173, "lon": 121.224324},
+        {"name": "喜德盛自行车(南桥店)", "lat": 30.94152, "lon": 121.46419},
+        {"name": "喜德盛自行车(浦东唐镇店)", "lat": 31.210105, "lon": 121.663983},
+        {"name": "TREK崔克自行车(上海万象城店)", "lat": 31.175375, "lon": 121.372418},
+        {"name": "美利达自行车(大宁店)", "lat": 31.273615, "lon": 121.44889},
+        {"name": "SPECIALIZED闪电自行车(旗舰店)", "lat": 31.211535, "lon": 121.515232},
+        {"name": "SPECIALIZED闪电自行车(蟠龙天地店)", "lat": 31.193697, "lon": 121.281976},
+        {"name": "喜德盛自行车(交大店)", "lat": 31.040534, "lon": 121.429759},
+        {"name": "SPECIALIZED闪电自行车(建国西路店)", "lat": 31.212263, "lon": 121.467619},
+        {"name": "上海JAVA佳沃自行车旗舰店(安驰路店)", "lat": 31.290416, "lon": 121.182375},
+        {"name": "喜德盛自行车(淞沪路店)", "lat": 31.314323, "lon": 121.517747},
+        {"name": "美利达自行车(中山南二路店)", "lat": 31.190068, "lon": 121.455557},
+        {"name": "喜德盛自行车(普陀区旗舰店)", "lat": 31.245094, "lon": 121.403643},
+        {"name": "JAVA佳沃自行车(虹口专卖店)", "lat": 31.286356, "lon": 121.469619},
+        {"name": "美利达自行车(江桥旗舰店)", "lat": 31.268565, "lon": 121.32716},
+        {"name": "SPECIALIZED闪电自行车(碧云路店)", "lat": 31.24871, "lon": 121.595867},
+        {"name": "SPECIALIZED闪电自行车(长宁店)", "lat": 31.222894, "lon": 121.416397},
+        {"name": "SPECIALIZED闪电自行车(苏河湾店)", "lat": 31.248878, "lon": 121.483343},
+        {"name": "自行车专卖店", "lat": 31.309074, "lon": 121.500951},
+        {"name": "修理电动车自行车", "lat": 31.294922, "lon": 121.512095},
+        {"name": "美利达自行车", "lat": 31.093443, "lon": 121.770747},
+        {"name": "菲利普自行车", "lat": 30.9032, "lon": 121.733447},
+        {"name": "自行车维修点", "lat": 31.056351, "lon": 121.209863},
+        {"name": "小程自行车修理店", "lat": 31.18009, "lon": 121.374458},
+        {"name": "秀峰自行车修理", "lat": 31.209004, "lon": 121.498415},
+        {"name": "CAMP坎普自行车专卖店(下南路店)", "lat": 31.191078, "lon": 121.541498},
+        {"name": "电动自行车上牌处", "lat": 31.180287, "lon": 121.51648},
+        {"name": "自行车维修点", "lat": 31.056098, "lon": 121.221852},
+        {"name": "自行车租赁点", "lat": 31.224166, "lon": 121.363056},
+        {"name": "自行车租赁点", "lat": 31.522056, "lon": 121.94801},
+        {"name": "自行车停放处", "lat": 31.278698, "lon": 121.482303},
+        {"name": "修理自行车", "lat": 30.896945, "lon": 121.245765},
+        {"name": "自行车租赁", "lat": 31.259291, "lon": 121.623971},
+        {"name": "EZbike自行车租赁", "lat": 31.358897, "lon": 121.219805},
+        {"name": "自行车租赁点", "lat": 31.095916, "lon": 121.527562},
+        {"name": "上海自行车馆", "lat": 31.542547, "lon": 121.865675},
+        {"name": "自行车租赁点", "lat": 31.210897, "lon": 121.46684},
+        {"name": "自行车租赁点", "lat": 31.207015, "lon": 121.630543},
+        {"name": "EZbike自行车租赁", "lat": 31.362414, "lon": 121.195749},
+        {"name": "EZbike自行车租赁", "lat": 31.371272, "lon": 121.203936},
+        {"name": "公共自行车租赁点", "lat": 31.217456, "lon": 121.674178},
+        {"name": "EZbike自行车租赁", "lat": 31.358321, "lon": 121.210247},
+        {"name": "自行车租赁点", "lat": 31.248529, "lon": 121.687052},
+        {"name": "自行车租赁点", "lat": 31.367198, "lon": 121.422537},
+        {"name": "自行车租赁点", "lat": 31.196611, "lon": 121.613538},
+        {"name": "修自行车白铁", "lat": 31.161621, "lon": 121.73752},
+        {"name": "JAVA佳沃自行车", "lat": 31.142369, "lon": 121.319941},
+        {"name": "自行车停车场", "lat": 31.316854, "lon": 121.467521},
+        {"name": "自行车租赁点", "lat": 31.234737, "lon": 121.48593},
+        {"name": "自行车租赁点", "lat": 31.355162, "lon": 121.507624},
+        {"name": "自行车租赁点", "lat": 31.06384, "lon": 121.510862},
+        {"name": "自行车租赁点", "lat": 31.186604, "lon": 121.470053},
+        {"name": "公共自行车", "lat": 31.116623, "lon": 121.595582},
+        {"name": "自行车租赁点", "lat": 31.189093, "lon": 121.637401},
+        {"name": "自行车租赁点", "lat": 31.331807, "lon": 121.48153},
+        {"name": "电动自行车充电站", "lat": 31.315224, "lon": 121.459019},
+        {"name": "自行车租赁点", "lat": 31.056234, "lon": 121.591709},
+        {"name": "建和自行车公司", "lat": 31.426671, "lon": 121.230292},
+        {"name": "自行车租赁点", "lat": 31.213721, "lon": 121.129697},
+        {"name": "自行车租赁点", "lat": 31.140399, "lon": 121.582333},
+        {"name": "自行车租赁点", "lat": 31.184372, "lon": 121.396883},
+        {"name": "维修电动车自行车", "lat": 30.715131, "lon": 121.344059},
+        {"name": "自行车租赁点", "lat": 31.061407, "lon": 121.517393},
+        {"name": "公共自行车", "lat": 31.394547, "lon": 121.512143},
+        {"name": "电动自行车充电站", "lat": 31.30078, "lon": 121.491018},
+        {"name": "自行车租赁点", "lat": 31.258883, "lon": 121.617845},
+        {"name": "自行车租赁点", "lat": 31.060557, "lon": 121.511372},
+        {"name": "自行车工作室", "lat": 31.273885, "lon": 121.504067},
+        {"name": "自行车修理", "lat": 31.592624, "lon": 121.662037},
+        {"name": "自行车租赁点", "lat": 31.32362, "lon": 121.6133},
+        {"name": "自行车租赁点", "lat": 31.065556, "lon": 121.512375},
+        {"name": "自行车租赁点", "lat": 31.114871, "lon": 121.595358},
+        {"name": "超轻自行车", "lat": 31.035151, "lon": 121.65871},
+        {"name": "自行车租赁点", "lat": 31.052534, "lon": 121.515724},
+        {"name": "自行车租赁点", "lat": 31.118225, "lon": 121.392363},
+        {"name": "自行车租赁点", "lat": 31.066809, "lon": 121.510863},
+        {"name": "新华自行车配件", "lat": 31.549323, "lon": 121.630362},
+        {"name": "自行车租赁点", "lat": 31.121141, "lon": 121.589549},
+        {"name": "自行车停车点", "lat": 31.185138, "lon": 121.441126},
+        {"name": "自行车修理", "lat": 31.685315, "lon": 121.372001},
+        {"name": "自行车租赁点", "lat": 31.290395, "lon": 121.413109},
+        {"name": "自行车驿站", "lat": 31.253084, "lon": 121.2953},
+        {"name": "自行车租赁点", "lat": 31.274505, "lon": 121.417456},
+        {"name": "自行车停放处", "lat": 31.260455, "lon": 121.583931},
+        {"name": "自行车租赁点", "lat": 31.108824, "lon": 121.617733},
+        {"name": "自行车停车场", "lat": 31.211476, "lon": 121.396467},
+        {"name": "自行车修理部", "lat": 31.792443, "lon": 121.319257},
+        {"name": "自行车租赁点", "lat": 31.022413, "lon": 121.399247},
+        {"name": "修理自行车洗车", "lat": 31.34731, "lon": 121.846058},
+        {"name": "丹凤自行车厂", "lat": 30.877267, "lon": 121.49332},
+        {"name": "修理电动车自行车", "lat": 31.197114, "lon": 121.187714},
+        {"name": "电动自行车充电桩", "lat": 31.317863, "lon": 121.458721},
+        {"name": "烧烤场自行车驿站", "lat": 31.696484, "lon": 121.483779},
+        {"name": "自行车停车场", "lat": 31.332289, "lon": 121.602009},
+        {"name": "沈毅自行车行", "lat": 31.746217, "lon": 121.295395},
+        {"name": "碳纤自行车厂", "lat": 31.317052, "lon": 121.246672},
+        {"name": "自行车停车场", "lat": 31.286566, "lon": 121.441771},
+        {"name": "自行车-停车库", "lat": 31.244884, "lon": 121.372272},
+        {"name": "自行车停放点", "lat": 31.161671, "lon": 121.388845},
+        {"name": "电动车自行车", "lat": 31.054003, "lon": 121.77436},
+        {"name": "水上自行车", "lat": 30.826466, "lon": 121.563723},
+        {"name": "电动自行车充电桩", "lat": 31.207193, "lon": 121.45273},
+        {"name": "电动自行车充电桩", "lat": 31.291173, "lon": 121.526196},
+        {"name": "自行车-收费停车场", "lat": 31.310632, "lon": 121.491535},
+        {"name": "电动自行车充电桩", "lat": 31.300173, "lon": 121.452802},
+        {"name": "电动自行车充电桩", "lat": 31.270226, "lon": 121.4658},
+        {"name": "电动自行车充电站", "lat": 31.270366, "lon": 121.419231},
+        {"name": "自行车停车场", "lat": 31.372249, "lon": 121.434472},
+        {"name": "自行车停车场", "lat": 31.368646, "lon": 121.442344},
+        {"name": "自行车租赁点", "lat": 31.291084, "lon": 121.321083},
+        {"name": "喜德盛超轻自行车", "lat": 31.197548, "lon": 121.453134},
+        {"name": "赛威超轻自行车", "lat": 30.918949, "lon": 121.473103},
+        {"name": "自行车停车场", "lat": 31.224121, "lon": 121.444026},
+        {"name": "自行车停放区域", "lat": 31.213931, "lon": 121.495621},
+        {"name": "自行车停车场", "lat": 31.17318, "lon": 121.454547},
+        {"name": "自行车停车场", "lat": 31.344289, "lon": 121.46501},
+        {"name": "自行车-停车点", "lat": 31.239488, "lon": 121.495294},
+        {"name": "自行车停车场", "lat": 31.190983, "lon": 121.469046},
+        {"name": "自行车停车场", "lat": 31.330925, "lon": 121.603786},
+        {"name": "自行车停车场", "lat": 31.280131, "lon": 121.468681},
+        {"name": "自行车停车场", "lat": 31.279586, "lon": 121.41053},
+        {"name": "自行车车库", "lat": 31.248096, "lon": 121.365767},
+        {"name": "自行车停车场", "lat": 31.414271, "lon": 121.499063},
+        {"name": "自行车停车处", "lat": 30.996799, "lon": 121.764629},
+        {"name": "自行车停车场", "lat": 31.287716, "lon": 121.489044},
+        {"name": "自行车停放处", "lat": 31.206542, "lon": 121.432194},
+        {"name": "雅驰自行车公司", "lat": 31.177109, "lon": 121.402444},
+        {"name": "自行车停车场", "lat": 31.2411, "lon": 121.483826},
+        {"name": "自行车停车点", "lat": 31.259713, "lon": 121.46271},
+        {"name": "自行车停车场", "lat": 31.049079, "lon": 121.768949},
+        {"name": "自行车停车点", "lat": 31.300902, "lon": 121.619122},
+        {"name": "自行车停车场", "lat": 31.051106, "lon": 121.762049},
+        {"name": "自行车停车点", "lat": 31.274277, "lon": 121.448444},
+        {"name": "自行车停车点", "lat": 31.235308, "lon": 121.476854}
+    ];      
+    
+// 自行车点图标（带绿色圆形背景）
+const greenBikeIcon = L.divIcon({
+  html: `
+    <div style="
+      background-color: white;
+      border: 2px solid green;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+      <i class="fa fa-bicycle" style="color:green; font-size: 12px;"></i>
+    </div>
+  `,
+  className: '',
+  iconSize: [28, 28]
+});
+
+    
+    // 添加上海自行车站点到地图
+    function addBikeStations() {
+        shanghaiBikeStations.forEach(function(station) {
+            var marker = L.marker([station.lat, station.lon],{icon:greenBikeIcon})
+            .bindPopup(`<b>${station.name}</b><br>${station.address}`);
+            marker.addTo(layers.bike);
+        });
+    }
+
+    // 默认加载上海自行车站数据
+    addBikeStations();
+
+    //添加充电站点
+    var shanghaiChargeStations = [
+        {"name": "国家电网充电站(上海浦东新区金京路人才公寓电动汽车站)", "lat": 31.306801, "lon": 121.622475},
+        {"name": "驿充电充电站(上海长兴人民医院)", "lat": 31.398703, "lon": 121.710652},
+        {"name": "小桔充电充电站(宝丰联大酒店快充站)", "lat": 31.303311, "lon": 121.493759},
+        {"name": "电动汽车充电站(上海瑞珂特种玻璃有限公司)", "lat": 31.108947, "lon": 121.839843},
+        {"name": "一城风景小桔充电站(上海228街坊站)", "lat": 31.294993, "lon": 121.549997},
+        {"name": "沪充充(崇明堡镇彷徨村充电站)", "lat": 31.554777, "lon": 121.696375},
+        {"name": "星成充电充电站(申江路站)", "lat": 31.111125, "lon": 121.646015},
+        {"name": "国家电网电动汽车充电站(崇明瀛东度假村公共快充站)", "lat": 31.470615, "lon": 121.850813},
+        {"name": "电动汽车充电站(仁义路)", "lat": 31.032645, "lon": 121.657808},
+        {"name": "小桔充电充电站(上海市杨浦区INNO创智地下站)", "lat": 31.320847, "lon": 121.512224},
+        {"name": "国家电网充电站(粤秀苑)", "lat": 31.293597, "lon": 121.466874},
+        {"name": "星星充电充电站(竖新)", "lat": 31.609594, "lon": 121.626456},
+        {"name": "上海浦东国际机场1号航站楼P1停车库电动汽车充电站", "lat": 31.15844, "lon": 121.810082},
+        {"name": "电动汽车充电站(金石路)", "lat": 31.466552, "lon": 121.357013},
+        {"name": "电动汽车充电站(上海檀程大酒店站)", "lat": 31.310485, "lon": 121.498859},
+        {"name": "蔚景云充电站(上海川沙CitiGo充电站)", "lat": 31.205711, "lon": 121.710531},
+        {"name": "壳牌充电站(壳牌充电上海静安区临汾名城南区慢充站一区)", "lat": 31.318523, "lon": 121.473733},
+        {"name": "电动汽车充电站(中科科创中心)", "lat": 31.341866, "lon": 121.485537},
+        {"name": "电动汽车充电站(长江路)", "lat": 31.349505, "lon": 121.490182},
+        {"name": "一城风景小桔杨浦悠方快充站", "lat": 31.335516, "lon": 121.515923},
+        {"name": "电动汽车充电站(长江路)", "lat": 31.349505, "lon": 121.490182},
+        {"name": "一城风景小桔杨浦悠方快充站", "lat": 31.335516, "lon": 121.515923},
+        {"name": "依威能源充电站(荷兰风情街二期)", "lat": 31.340075, "lon": 121.579743},
+        {"name": "小鹏充电站(上海协信星光广场地下站)", "lat": 31.304848, "lon": 121.465529},
+        {"name": "小鹏充电站(开放运营 - S4超快充 - 上海迪士尼度假区站)", "lat": 31.139487, "lon": 121.672877},
+        {"name": "小桔充电充电站(上海市杨浦区中航天盛广场地下站)", "lat": 31.314731, "lon": 121.515697},
+        {"name": "电动汽车充电站(悦速充铁山路336号超充站(华为超充技术支持))", "lat": 31.386677, "lon": 121.464627},
+        {"name": "鲸充充电站", "lat": 31.36428, "lon": 121.466633},
+        {"name": "特来电充电站(百熙南路西)", "lat": 31.104789, "lon": 121.771258},
+        {"name": "星星充电充电站(上海充客新能源长江路站)", "lat": 31.358119, "lon": 121.505024},
+        {"name": "易慧汽车充电站", "lat": 31.203237, "lon": 121.67758},
+        {"name": "特来电充电站(百熙南路东)", "lat": 31.104832, "lon": 121.773109},
+        {"name": "小桔充电充电站(充典曹路宝龙广场充电站)", "lat": 31.271734, "lon": 121.658339},
+        {"name": "小桔充电充电站(清帆能源两港装饰城超充站(二期))", "lat": 31.07819, "lon": 121.717976},
+        {"name": "星星充电汽车充电站(浦东新区通联支付网络服务股份有限公司1区)", "lat": 31.257084, "lon": 121.682485},
+        {"name": "特来电充电站(特来电上海皇廷世际酒店充电站)", "lat": 31.217547, "lon": 121.654853},
+        {"name": "特来电充电站(上海皇廷大酒店站)", "lat": 31.190537, "lon": 121.714762},
+        {"name": "电动汽车充电站(浦东新区秋和苑东苑)", "lat": 31.067122, "lon": 121.751505},
+        {"name": "华洲路智慧能源汽车充电站公园", "lat": 31.202493, "lon": 121.744009},
+        {"name": "庚星能源充电站(庚星能源(上海宝山宝龙广场站))", "lat": 31.401178, "lon": 121.488594},
+        {"name": "国家电网充电站(闸北电厂)", "lat": 31.348112, "lon": 121.532353},
+        {"name": "小桔充电充电站(绿地云悦坊充电站)", "lat": 31.18784, "lon": 121.706056},
+        {"name": "优登一电充电站", "lat": 31.388937, "lon": 121.431913},
+        {"name": "蔚景云充电站(锦充昊耀科创大厦充电站)", "lat": 31.389054, "lon": 121.435739},
+        {"name": "员工专用充电站(上海浦东国际机场P10停车场)", "lat": 31.169232, "lon": 121.810364},
+        {"name": "国家电动汽车充电站(圣御工业总部园7号楼)", "lat": 31.164826, "lon": 121.713851},
+        {"name": "轶世充(横沙岛集贸市场站)", "lat": 31.347016, "lon": 121.843798},
+        {"name": "电动汽车充电站(季景路)", "lat": 31.338136, "lon": 121.597118},
+        {"name": "电动汽车充电站(X574(申江路))", "lat": 31.304566, "lon": 121.631326},
+        {"name": "电动汽车充电站(上海爱情谷文创园)", "lat": 31.212018, "lon": 121.700302},
+        {"name": "安悦充电充电站(宝岛森林衡山酒店站)", "lat": 31.681341, "lon": 121.487213},
+        {"name": "蔚来换电站(上海洋北停车场站)", "lat": 31.396893, "lon": 121.432772},
+        {"name": "森通智达充电站(万科智云新苑二期站)", "lat": 31.442989, "lon": 121.343076},
+        {"name": "国家电网充电站(上海市虹口区华二小区公共充电站(上电实业))", "lat": 31.304267, "lon": 121.475207},
+        {"name": "i玖充电·向化公路站", "lat": 31.553389, "lon": 121.739018},
+        {"name": "电动汽车充电站(泰兴桥路)", "lat": 31.379341, "lon": 121.491635},
+        {"name": "汇誉新能源充电站(外服大厦充电站)", "lat": 31.298002, "lon": 121.497126},
+        {"name": "特来电充电站(上海设计中心)", "lat": 31.29247, "lon": 121.508612},
+        {"name": "东智商务广场充电站", "lat": 31.400708, "lon": 121.461958},
+        {"name": "安悦充电站(上坤上街)", "lat": 31.425691, "lon": 121.349784},
+        {"name": "BP快速充电站(上海东方蓝海国际广场一期地下站)", "lat": 31.296126, "lon": 121.527956},
+        {"name": "星星充电充电站(丽豪大酒店1区直流充电站)", "lat": 31.153482, "lon": 121.766296},
+        {"name": "国家电网充电站(宝钢体育中心)", "lat": 31.415675, "lon": 121.479396},
+        {"name": "汽车充电站(浦东机场)", "lat": 31.169564, "lon": 121.810196},
+        {"name": "小易充电(大润发中原店)地上停车场F3", "lat": 31.319991, "lon": 121.539866},
+        {"name": "杨浦超级充电市光站", "lat": 31.327203, "lon": 121.530058},
+        {"name": "电动汽车充电站(尼德兰花园)", "lat": 31.340261, "lon": 121.590028},
+        {"name": "中津桥路136号车棚充电桩", "lat": 31.638162, "lon": 121.404487},
+        {"name": "江杨南路充电站", "lat": 31.336739, "lon": 121.474471},
+        {"name": "上海理工大学充电站", "lat": 31.301101, "lon": 121.559996},
+        {"name": "速停车·大圣充电站(宝权停车场站)", "lat": 31.398675, "lon": 121.466932},
+        {"name": "特来电充电站(绿源天地广场)", "lat": 31.327932, "lon": 121.531482},
+        {"name": "电动汽车充电站(浦东新区文竹南苑)", "lat": 31.072742, "lon": 121.755132},
+        {"name": "星星充电站(创智天地三期地下站)", "lat": 31.311194, "lon": 121.518529},
+        {"name": "电动汽车充电站(密山二村西块)", "lat": 31.407865, "lon": 121.490545},
+        {"name": "黑熊充电宝乐汇.月浦充电站", "lat": 31.419797, "lon": 121.439764},
+        {"name": "星星充电充电站(家乐福川沙店二期)", "lat": 31.18619, "lon": 121.698404},
+        {"name": "电桩宝充电站", "lat": 31.138117, "lon": 121.674258},
+        {"name": "均悦充充电站(上海君赢农家乐充电站)", "lat": 31.685822, "lon": 121.47785},
+        {"name": "电动汽车充电站(崇明区悠然民宿)", "lat": 31.722473, "lon": 121.521453},
+        {"name": "电动汽车充电站(欣春苑)", "lat": 31.031118, "lon": 121.712722},
+        {"name": "能效邻里共享汽车充电站(光辉村887号)", "lat": 31.041928, "lon": 121.701488},
+        {"name": "电动汽车充电站(上海国际机场股份有限公司飞行区管理部)", "lat": 31.173718, "lon": 121.797436},
+        {"name": "壳牌充电站(壳牌上海浦东新区恒裕嘉园交流充电站)", "lat": 31.263983, "lon": 121.70195},
+        {"name": "朗新能源投资有限公司充电站(建军公寓充电站)", "lat": 31.11019, "lon": 121.77685},
+        {"name": "快来充充电站(上海安岛酒店)", "lat": 31.340698, "lon": 121.891139},
+        {"name": "依威能源充电站(朗诗未来树)", "lat": 31.1044, "lon": 121.768555},
+        {"name": "泰那斯充电站(开元大酒店站)", "lat": 30.971361, "lon": 121.743626},
+        {"name": "小桔充电充电站(曙启路)", "lat": 31.276988, "lon": 121.680884},
+        {"name": "云快充充电站(九分钟汇通南园快充站)", "lat": 31.203158, "lon": 121.713082},
+        {"name": "特来电充电站(特来电上海市浦东新区浦发唐城充电站)", "lat": 31.219102, "lon": 121.67921},
+        {"name": "壳牌充电站(壳牌充电上海静安区临汾名城南区慢充站七区)", "lat": 31.317361, "lon": 121.471165},
+        {"name": "虹口超充站", "lat": 31.298231, "lon": 121.475782},
+        {"name": "壳牌充电站(壳牌上海宝山区宝月花园交流充电站)", "lat": 31.429441, "lon": 121.418665},
+        {"name": "壳牌充电站(壳牌上海宝山区友谊家园东侧停车场慢充站)", "lat": 31.404076, "lon": 121.462355},
+        {"name": "壳牌充电站(壳牌上海宝山区诚和佳苑交流充电站(三区))", "lat": 31.38192, "lon": 121.445645},
+        {"name": "壳牌充电站(壳牌上海宝山区富浩河滨花园交流充电站)", "lat": 31.412224, "lon": 121.429917},
+        {"name": "壳牌充电站(壳牌上海宝山万科启宸交流充电站)", "lat": 31.442611, "lon": 121.343312},
+        {"name": "协行充电站(逅院民宿站)", "lat": 31.549885, "lon": 121.836433},
+        {"name": "依威能源充电站(何家湾路110号)", "lat": 31.33577, "lon": 121.498328},
+        {"name": "安悦充电充电站(民乐城惠益新苑北苑站)", "lat": 31.06587, "lon": 121.746},
+        {"name": "国家电网充电站(东平国家森林公园)", "lat": 31.681264, "lon": 121.487224},
+        {"name": "壳牌充电站(壳牌上海浦东新区芦洋花园交流充电站)", "lat": 30.979304, "lon": 121.742317},
+        {"name": "国家电网充电站(上海崇明区堡镇供电所)", "lat": 31.543709, "lon": 121.619602},
+        {"name": "依威能源充电站(金桥阳光花苑)", "lat": 31.209971, "lon": 121.690801},
+        {"name": "新能源汽车充电站", "lat": 31.252562, "lon": 121.707609},
+        {"name": "森通智达汽车充电站(听潮豪园)", "lat": 31.04379, "lon": 121.748153},
+        {"name": "联行充电站(宝林一村西区)", "lat": 31.404749, "lon": 121.486845},
+        {"name": "云快充充电站(上海汇通南苑)", "lat": 31.203574, "lon": 121.714887},
+        {"name": "蔚来换电站(上海五维空间)", "lat": 31.31378, "lon": 121.554617},
+        {"name": "壳牌充电站(壳牌上海浦东新区爱家新城北区交流充电站)", "lat": 30.980355, "lon": 121.759612},
+        {"name": "均悦充充电站(上海抱月楼农家乐充电站)", "lat": 31.66001, "lon": 121.496003},
+        {"name": "星星充电充电站(吴淞科技园2区直流充电站)", "lat": 31.370452, "lon": 121.476009},
+        {"name": "顺荣捷宝莲城充电站(地面站)", "lat": 31.394755, "lon": 121.490782},
+        {"name": "顺易充充电站(崇明港东公路站)", "lat": 31.666378, "lon": 121.42748},
+        {"name": "星星充电充电站(听悦逸居大酒店直流充电站)", "lat": 31.070951, "lon": 121.744786},
+        {"name": "壳牌充电站(壳牌上海宝山区同济公寓交流充电站)", "lat": 31.413443, "lon": 121.479195},
+        {"name": "顺易充充电站(崇明永西南路站)", "lat": 31.559447, "lon": 121.793175},
+        {"name": "壳牌充电汽车充电站(壳牌上海芦洋花园地面慢充站 - 2区)", "lat": 30.979054, "lon": 121.741956},
+        {"name": "协行充电站(荟仁雅苑站)", "lat": 31.297035, "lon": 121.685065},
+        {"name": "依威能源充电站(宝业万华城)", "lat": 31.031179, "lon": 121.745847},
+        {"name": "特来电充电站(特来电站上海长安禾庭)", "lat": 31.209199, "lon": 121.702445},
+        {"name": "壳牌充电站(壳牌上海浦东新区彩虹雅苑西区交流充电站)", "lat": 31.061981, "lon": 121.743989},
+        {"name": "森通智达汽车充电站(康敏苑地下站(东区))", "lat": 31.042742, "lon": 121.774027},
+        {"name": "普天充电站(绿地铂骊酒店)", "lat": 31.191015, "lon": 121.704934},
+        {"name": "芸莱汽车充电站", "lat": 31.342958, "lon": 121.506492},
+        {"name": "明祥苑60弄地上充电桩", "lat": 31.078936, "lon": 121.729085},
+        {"name": "国家电网充电站(上海崇明区政府)", "lat": 31.628791, "lon": 121.404232},
+        {"name": "明祥苑70弄地上充电桩", "lat": 31.079527, "lon": 121.728048},
+        {"name": "唐云充电站", "lat": 31.342477, "lon": 121.484817},
+        {"name": "速起达充电站(【速起达】安信广场E区充电站)", "lat": 31.399082, "lon": 121.49585},
+        {"name": "润诚达充电站(蓝鲤能源上汽国际工业设计中心)", "lat": 31.346044, "lon": 121.5038},
+        {"name": "极越充电站(上海宝山二村)", "lat": 31.399132, "lon": 121.506049},
+        {"name": "森通智达充电站(金桥阳光花苑二期A站)", "lat": 31.210092, "lon": 121.690987},
+        {"name": "依威能源充电站(西停车场)", "lat": 31.028249, "lon": 121.707108},
+        {"name": "充电桩APP充电站(听悦路1101弄充电桩(私人))", "lat": 31.067939, "lon": 121.74221},
+        {"name": "乐华充电(吴淞科技园直流充电站)", "lat": 31.369613, "lon": 121.476353},
+        {"name": "瑜琛充电站(港东公路站)", "lat": 31.666323, "lon": 121.427369},
+        {"name": "电动汽车充电站", "lat": 31.345281, "lon": 121.48622},
+        {"name": "星星充电站(泗塘大厦)", "lat": 31.344807, "lon": 121.465063},
+        {"name": "极越(上海民乐城颐康名苑东苑)充电站", "lat": 31.074764, "lon": 121.746895},
+        {"name": "森通智达充电站(盛泰家园地下站)", "lat": 31.175271, "lon": 121.750537},
+        {"name": "森通智达充电站(民乐城荣春苑北苑地下站)", "lat": 31.069902, "lon": 121.750568},
+        {"name": "汽车充电站(玩具总动员酒店西)", "lat": 31.144809, "lon": 121.659117},
+        {"name": "壳牌充电站(壳牌上海宝山区漠河路1100弄交流充电站)", "lat": 31.413437, "lon": 121.474355},
+        {"name": "森通智达充电站(莎海苑站)", "lat": 31.05372, "lon": 121.775878},
+        {"name": "安悦充电充电站(安悦汽车站市场监督局站)", "lat": 31.054743, "lon": 121.732345},
+        {"name": "森通智达充电站(吉园坊站)", "lat": 31.029686, "lon": 121.743735},
+        {"name": "依威能源充电站(沪东金融大厦)", "lat": 31.306889, "lon": 121.523849}
+    ];    
+
+         // 充电站点图标（带紫色圆形背景）
+const chargingStationIcon = L.divIcon({
+  html: `
+    <div style="
+      background-color: white;
+      border: 2px solid purple;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+      <i class="fa fa-bolt" style="color:purple; font-size: 12px;"></i>
+    </div>
+  `,
+  className: '',
+  iconSize: [28, 28]
+});
+
+    // 添加上海充电站站点到地图
+    function addChargeStations() {
+        shanghaiChargeStations.forEach(function(station) {
+            var marker = L.marker([station.lat, station.lon],{icon:chargingStationIcon})
+            .bindPopup(`<b>${station.name}</b><br>${station.address}`);
+            marker.addTo(layers.charge);
+        });
+    }
+
+    // 默认加载上海自行车站数据
+    addChargeStations();
+    
+    // 根据勾选状态更新图层显示
+        function updateLayers() {
+            for (var key in layers) {
+                if (document.getElementById(key).checked) {
+                    map.addLayer(layers[key]);
+                } else {
+                    map.removeLayer(layers[key]);
+                }
+            }
+        }
+
+        // 初始化图层
+        updateLayers();
+    </script>
+
+</body>
+</html>

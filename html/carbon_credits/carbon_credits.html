@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>碳积分系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-50 min-h-screen font-sans">
+
+  <!-- 用户信息卡 -->
+<div class="max-w-7xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow-md flex items-center space-x-4 relative">
+    <img src="./卡通头像.jpg" alt="头像" class="w-20 h-20 rounded-full border-4 border-green-300" />
+    <div class="flex-1">
+      <h2 class="text-xl font-bold">昵称：低碳达人</h2>
+      <p>手机号：198****9309</p>
+      <p class="text-green-600 mt-2 font-semibold">当前碳积分：<span id="points" class="text-2xl">62000</span></p>
+    </div>
+  
+    <!-- 右侧按钮区域 -->
+    <div class="flex items-center space-x-4">
+      <button id="showFormBtn"
+              class="p-3 bg-green-300 rounded-full hover:bg-green-400 transition-colors"
+              title="待收货信息登记">
+        📥
+      </button>
+  
+      <button id="toggleOrderBtn"
+              class="p-3 bg-green-300 rounded-full hover:bg-green-400 transition-colors"
+              title="查看待收货">
+        📦
+      </button>
+    </div>
+  </div>
+  
+  <!-- 模态表单区域 -->
+  <div id="formModal" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center invisible z-50">
+    <div class="bg-white p-6 rounded-xl w-96 shadow-xl">
+      <h2 class="text-lg font-bold mb-4">登记收货信息</h2>
+      <form id="infoForm" class="space-y-4">
+        <div>
+          <label class="block font-semibold mb-1">电话</label>
+          <input type="text" name="phone" class="w-full border rounded p-2" required />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">地址</label>
+          <input type="text" name="address" class="w-full border rounded p-2" required />
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button type="button" id="cancelBtn" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">取消</button>
+          <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">提交</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- 待收货信息区域 -->
+  <div id="orderList" class="max-w-7xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow-md invisible">
+    <h2 class="text-lg font-bold mb-4">待收货物品</h2>
+    <ul id="orderItems" class="divide-y divide-gray-200">
+      <!-- 动态添加 -->
+    </ul>
+  </div>
+  
+  <script>
+    const showFormBtn = document.getElementById('showFormBtn');
+    const formModal = document.getElementById('formModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const infoForm = document.getElementById('infoForm');
+    const toggleOrderBtn = document.getElementById('toggleOrderBtn');
+    const orderList = document.getElementById('orderList');
+    const orderItems = document.getElementById('orderItems');
+  
+    let orders = [];
+  
+    // 模拟订单数据：每次提交都添加一条记录
+    function addMockOrder() {
+      const now = new Date().toLocaleString();
+      orders.push({
+        item: '低碳环保礼包',
+        cost: 10000,
+        timestamp: now
+      });
+    }
+  
+    showFormBtn.addEventListener('click', () => {
+      formModal.classList.remove('invisible');
+    });
+  
+    cancelBtn.addEventListener('click', () => {
+      formModal.classList.add('invisible');
+    });
+  
+    toggleOrderBtn.addEventListener('click', () => {
+      orderList.classList.toggle('invisible');
+      toggleOrderBtn.title = orderList.classList.contains('invisible') ? '查看待收货' : '隐藏待收货';
+    });
+  
+    infoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const phone = infoForm.phone.value.trim();
+      const address = infoForm.address.value.trim();
+  
+      if (!phone || !address) {
+        alert('请填写完整的电话和地址');
+        return;
+      }
+  
+      addMockOrder();
+  
+      // 更新订单列表
+      orderItems.innerHTML = '';
+      orders.forEach(order => {
+        const li = document.createElement('li');
+        li.className = 'py-4 flex justify-between items-center';
+        li.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <span class="text-green-600 font-semibold">${order.item}</span>
+            <span class="text-gray-500">（消耗 ${order.cost} 积分）</span>
+          </div>
+          <span class="text-sm text-gray-500">兑换时间：${order.timestamp}</span>
+        `;
+        orderItems.appendChild(li);
+      });
+  
+      // 显示订单列表
+      orderList.classList.remove('invisible');
+      formModal.classList.add('invisible');
+      infoForm.reset();
+      alert('信息登记成功！待收货物品已显示');
+    });
+  </script>  
+
+  <!-- 低碳行为记录 -->
+  <div class="max-w-7xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- 步行 -->
+    <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition flex justify-between items-center">
+      <div>
+        <h3 class="text-lg font-bold mb-2">步行出行</h3>
+        <p>已累计 3 公里</p>
+        <p class="text-green-500 mt-1">+30 积分</p>
+      </div>
+      <img src="./步行.png" alt="步行图标" class="w-16 h-16 opacity-90" />
+    </div>
+  
+    <!-- 骑行 -->
+    <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition flex justify-between items-center">
+      <div>
+        <h3 class="text-lg font-bold mb-2">骑行出行</h3>
+        <p>已累计 5 公里</p>
+        <p class="text-green-500 mt-1">+50 积分</p>
+      </div>
+      <img src="./骑行.png" alt="骑行图标" class="w-16 h-16 opacity-90" />
+    </div>
+  
+    <!-- 公共交通 -->
+    <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition flex justify-between items-center">
+      <div>
+        <h3 class="text-lg font-bold mb-2">公共交通</h3>
+        <p>已乘坐 2 次</p>
+        <p class="text-green-500 mt-1">+40 积分</p>
+      </div>
+      <img src="./公共交通.png" alt="公交图标" class="w-16 h-16 opacity-90" />
+    </div>
+  </div>  
+  
+  <!-- 积分兑换区域 -->
+  <div class="max-w-7xl mx-auto mt-10">
+    <h2 class="text-xl font-bold mb-4">碳积分兑换</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white rounded-xl shadow-md p-2 hover:shadow-lg transition text-center">
+        <img src="./购买树种与种树.png" alt="种一棵树" class="mx-auto mb-2" />
+        <p class="font-semibold">购买树种，邀农民种树</p>
+        <p class="text-sm text-green-600">2000积分</p>
+        <button class="exchange-btn mt-2 px-3 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600"
+                data-cost="2000">兑换</button>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-2 hover:shadow-lg transition text-center">
+        <img src="./低碳水杯.png" alt="低碳水杯" class="mx-auto mb-2" />
+        <p class="font-semibold">低碳水杯</p>
+        <p class="text-sm text-green-600">3000积分</p>
+        <button class="exchange-btn mt-2 px-3 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600"
+                data-cost="3000">兑换</button>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-2 hover:shadow-lg transition text-center">
+        <img src="./环保手提袋合并.png" alt="平台文创环保手提袋" class="mx-auto mb-2" />
+        <p class="font-semibold">环保手提袋</p>
+        <p class="text-sm text-green-600">1500积分</p>
+        <button class="exchange-btn mt-2 px-3 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600"
+                data-cost="1500">兑换</button>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-2 hover:shadow-lg transition text-center">
+        <img src="./笔记本.png" alt="环保笔记本" class="mx-auto mb-2" />
+        <p class="font-semibold">环保笔记本</p>
+        <p class="text-sm text-green-600">5000积分</p>
+        <button class="exchange-btn mt-2 px-3 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600"
+                data-cost="5000">兑换</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 虚拟低碳农场区域 -->
+  <div class="max-w-7xl mx-auto mt-12 bg-gradient-to-b from-green-50 to-green-100 p-8 rounded-3xl shadow-lg">
+    <h2 class="text-3xl font-extrabold mb-8 text-center text-green-800 drop-shadow-md">🌱 我的低碳农场</h2>
+  
+    <!-- 天气显示 -->
+    <div id="weather" class="mb-8 max-w-md mx-auto bg-white rounded-xl shadow-md p-4 text-center text-xl font-semibold text-green-700 select-none">
+      天气：☀️ 晴天
+    </div>
+  
+    <!-- 植物选择菜单（默认隐藏） -->
+    <div id="plant-menu" class="max-w-md mx-auto mb-8 bg-white p-6 rounded-2xl shadow-xl hidden">
+      <h3 class="font-bold mb-4 text-green-800 text-xl text-center">选择植物种类</h3>
+      <div class="flex justify-around gap-6">
+        <button class="plant-select-btn bg-gradient-to-tr from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white px-5 py-3 rounded-2xl font-semibold shadow-md transition-transform transform hover:scale-105 active:scale-95 select-none" data-plant="tree" data-cost="100">🌱 小树苗<br><span class="text-sm">100 积分</span></button>
+        <button class="plant-select-btn bg-gradient-to-tr from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white px-5 py-3 rounded-2xl font-semibold shadow-md transition-transform transform hover:scale-105 active:scale-95 select-none" data-plant="corn" data-cost="80">🌽 玉米<br><span class="text-sm">80 积分</span></button>
+        <button class="plant-select-btn bg-gradient-to-tr from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 text-white px-5 py-3 rounded-2xl font-semibold shadow-md transition-transform transform hover:scale-105 active:scale-95 select-none" data-plant="sunflower" data-cost="120">🌻 向日葵<br><span class="text-sm">120 积分</span></button>
+      </div>
+      <button id="cancel-plant" class="mt-6 text-center text-gray-500 underline hover:text-gray-700 cursor-pointer select-none">取消</button>
+    </div>
+  
+    <!-- 农田格子 -->
+    <div id="farm-grid" class="grid grid-cols-3 md:grid-cols-6 gap-5 text-center">
+      <!-- 格子由脚本生成 -->
+    </div>
+  
+    <!-- 农场等级信息 -->
+    <div id="farm-level-info" class="mt-10 max-w-md mx-auto bg-white rounded-2xl shadow-md p-5 flex justify-around text-green-900 font-semibold select-none">
+      <div>等级：<span id="farm-level" class="text-2xl font-bold">1</span></div>
+      <div>经验：<span id="farm-xp" class="text-2xl font-bold">0</span>/<span id="farm-xp-next" class="text-2xl font-bold">5</span></div>
+      <div>成功率：<span id="farm-success-rate" class="text-2xl font-bold">80</span>%</div>
+    </div>
+  </div>
+  
+  <style>
+    /* 土壤纹理的农田格子 */
+    #farm-grid .farm-tile {
+      background:
+        radial-gradient(circle at 20% 20%, #6b4f3a 15%, transparent 16%),
+        radial-gradient(circle at 80% 80%, #5a3f2a 15%, transparent 16%),
+        linear-gradient(135deg, #7a5a3c 0%, #604228 100%);
+      background-repeat: repeat;
+      background-size: 60px 60px;
+      border-radius: 18px;
+      box-shadow:
+        inset 3px 3px 6px #4a3823,
+        inset -3px -3px 6px #8b6b4c,
+        3px 3px 7px rgba(0,0,0,0.2);
+      height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 2.2rem;
+      color: #dcd2c1;
+      user-select: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+      position: relative;
+    }
+
+    #farm-grid .farm-tile:hover {
+      transform: scale(1.07);
+      box-shadow:
+        inset 5px 5px 8px #6c5337,
+        inset -5px -5px 8px #a08b6e,
+        5px 5px 12px rgba(0,0,0,0.3);
+      background:
+        radial-gradient(circle at 20% 20%, #7d6041 15%, transparent 16%),
+        radial-gradient(circle at 80% 80%, #6b4f36 15%, transparent 16%),
+        linear-gradient(135deg, #886b48 0%, #705933 100%);
+      color: #f4e9d2;
+    }
+
+    /* 种植提示文字字体调整 */
+    #farm-grid .farm-tile span.text-gray-500 {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #cbbdac;
+      user-select: none;
+    }
+
+    #farm-grid .farm-tile .text-sm {
+      color: #e0d4b7;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+  
+    /* 成长中动画 */
+    #farm-grid .farm-tile[data-state="growing"] span {
+      animation: grow-scale 2s infinite ease-in-out;
+      display: inline-block;
+    }
+    @keyframes grow-scale {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+  
+    /* 成熟植物图标大小 */
+    #farm-grid .farm-tile[data-state="grown"] span {
+      font-size: 3.8rem;
+    }
+  
+    /* 天气和等级信息文字选择禁用 */
+    #weather, #farm-level-info {
+      user-select: none;
+    }
+  </style>  
+
+  <script>
+    const pointsEl = document.getElementById("points");
+    let currentPoints = parseInt(pointsEl.textContent);
+  
+    // 农场状态
+    const farmGrid = document.getElementById("farm-grid");
+    const farmTilesCount = 12; // 格子数量
+    const plantMenu = document.getElementById("plant-menu");
+    let selectedTile = null;
+  
+    // 农场升级系统
+    let farmLevel = 1;
+    let farmXP = 0;
+    let farmXPNext = 5; // 每级所需经验
+    const baseSuccessRate = 80; // 基础成功率80%
+    let successRate = baseSuccessRate;
+  
+    // 天气模拟
+    const weatherEl = document.getElementById("weather");
+    const weatherTypes = [
+      { name: "晴天", icon: "☀️", growthModifier: 1 },
+      { name: "雨天", icon: "🌧️", growthModifier: 0.7 },
+      { name: "多云", icon: "⛅", growthModifier: 0.9 }
+    ];
+    let currentWeatherIndex = 0;
+  
+    // 植物信息配置
+    const plants = {
+      tree: {
+        name: "小树苗",
+        growTime: 30000, // 50秒成长
+        cost: 100,
+        xpGain: 2,
+        iconStages: [
+          "🌱", // 生长阶段图标（字符）
+          '<img src="./大树.png" alt="大树" class="w-8 h-8">' // 成熟阶段图片（HTML标签）
+        ],
+      },
+      corn: {
+        name: "玉米",
+        growTime: 10000,
+        cost: 80,
+        xpGain: 1,
+        iconStages: [
+          "🌽", // 生长阶段图标（字符）
+          '<img src="./玉米.png" alt="玉米" class="w-8 h-8">' // 成熟阶段图片（HTML标签）
+        ],
+      },
+      sunflower: {
+        name: "向日葵",
+        growTime: 20000,
+        cost: 120,
+        xpGain: 3,
+        iconStages: [
+          "🌻", // 生长阶段图标（字符）
+          '<img src="./向日葵.png" alt="向日葵" class="w-8 h-8">' // 成熟阶段图片（HTML标签）
+        ],
+      }
+    };
+  
+    // 初始化农田格子
+    function initFarm() {
+      for (let i = 0; i < farmTilesCount; i++) {
+        const tile = document.createElement("div");
+        tile.className = "farm-tile relative bg-green-100 border-2 border-green-300 rounded-xl h-28 flex items-center justify-center cursor-pointer hover:bg-green-200 transition select-none";
+        tile.dataset.state = "empty";
+        tile.dataset.index = i;
+        tile.innerHTML = '<span class="text-gray-500">点击种植</span>';
+        farmGrid.appendChild(tile);
+  
+        tile.addEventListener("click", () => {
+          if (tile.dataset.state === "empty") {
+            selectedTile = tile;
+            showPlantMenu();
+          } else if (tile.dataset.state === "growing" || tile.dataset.state === "grown") {
+            alert("该格子已有植物生长中或已成熟！");
+          }
+        });
+      }
+    }
+  
+    // 显示植物选择菜单
+    function showPlantMenu() {
+      plantMenu.classList.remove("hidden");
+    }
+    
+    // 隐藏植物选择菜单
+    function hidePlantMenu() {
+      plantMenu.classList.add("hidden");
+      selectedTile = null;
+    }
+  
+    // 种植函数（带成功率判定）
+    function plant(selectedPlantKey) {
+      const plantInfo = plants[selectedPlantKey];
+      if (!plantInfo) return;
+
+      let adjustedSuccessRate = successRate * weatherTypes[currentWeatherIndex].growthModifier;
+      adjustedSuccessRate = Math.min(100, adjustedSuccessRate);
+
+      if (currentPoints < plantInfo.cost) {
+        alert("积分不足，无法种植该植物！");
+        hidePlantMenu();
+        return;
+      }
+
+      currentPoints -= plantInfo.cost;
+      pointsEl.textContent = currentPoints;
+
+      if (Math.random() * 100 <= adjustedSuccessRate) {
+        // 成功
+        const tile = selectedTile;  // 缓存当前格子引用
+        tile.dataset.state = "growing";
+        tile.dataset.plant = selectedPlantKey;
+        tile.innerHTML = `<span class="text-3xl">${plantInfo.iconStages[0]}</span><div class="text-sm mt-1 text-green-700">成长中...</div>`;
+
+        setTimeout(() => {
+          tile.dataset.state = "grown";
+          tile.innerHTML = `<span class="text-4xl">${plantInfo.iconStages[1]}</span><div class="text-sm mt-1 text-green-700">成熟了！点击收获</div>`;
+
+          farmXP += plantInfo.xpGain;
+          checkLevelUp();
+        }, plantInfo.growTime * weatherTypes[currentWeatherIndex].growthModifier);
+      } else {
+        // 失败
+        selectedTile.dataset.state = "empty";
+        selectedTile.innerHTML = '<span class="text-gray-500">种植失败，重新种植吧</span>';
+        alert("遗憾，种植失败了。你可以再试一次！");
+      }
+      hidePlantMenu();
+    }
+  
+    // 收获函数
+    farmGrid.addEventListener("click", (e) => {
+      const tile = e.target.closest(".farm-tile");
+      if (!tile) return;
+  
+      if (tile.dataset.state === "grown") {
+        // 收获植物，获得积分
+        const plantKey = tile.dataset.plant;
+        const plantInfo = plants[plantKey];
+        if (!plantInfo) return;
+  
+        // 收获获得积分 = 消耗积分的50%
+        const reward = Math.floor(plantInfo.cost * 0.5);
+        currentPoints += reward;
+        pointsEl.textContent = currentPoints;
+  
+        tile.dataset.state = "empty";
+        tile.dataset.plant = "";
+        tile.innerHTML = '<span class="text-gray-500">点击种植</span>';
+  
+        alert(`你收获了成熟的${plantInfo.name}，获得了 ${reward} 积分！`);
+      }
+    });
+  
+    // 等级升级检测
+    function checkLevelUp() {
+      if (farmXP >= farmXPNext) {
+        farmLevel++;
+        farmXP -= farmXPNext;
+        farmXPNext = Math.floor(farmXPNext * 1.5);
+        successRate = Math.min(100, successRate + 5); // 每升一级成功率提高5%
+  
+        updateLevelDisplay();
+  
+        alert(`恭喜你，农场升级啦！当前等级：${farmLevel}，种植成功率提升到 ${successRate}%`);
+      }
+      updateLevelDisplay();
+    }
+  
+    // 更新等级显示
+    function updateLevelDisplay() {
+      document.getElementById("farm-level").textContent = farmLevel;
+      document.getElementById("farm-xp").textContent = farmXP;
+      document.getElementById("farm-xp-next").textContent = farmXPNext;
+      document.getElementById("farm-success-rate").textContent = successRate;
+    }
+  
+    // 绑定植物菜单按钮事件
+    document.querySelectorAll(".plant-select-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!selectedTile) return;
+        const plantKey = btn.dataset.plant;
+        plant(plantKey);
+      });
+    });
+  
+    // 取消按钮
+    document.getElementById("cancel-plant").addEventListener("click", () => {
+      hidePlantMenu();
+    });
+  
+    // 天气定时切换（每30秒切换一次天气）
+    function cycleWeather() {
+      currentWeatherIndex = (currentWeatherIndex + 1) % weatherTypes.length;
+      const w = weatherTypes[currentWeatherIndex];
+      weatherEl.textContent = `天气：${w.icon} ${w.name}`;
+    }
+    setInterval(cycleWeather, 30000);
+  
+    // 初始化显示
+    updateLevelDisplay();
+    initFarm();
+  </script>  
+
+  <!-- 页脚 -->
+  <footer class="mt-12 text-center text-sm text-gray-500 pb-6">
+    © 清风e路，碳享出行——长三角交通碳减排数字赋能平台
+  </footer>
+
+  <!-- 模态弹窗 -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 hidden items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full text-center animate-fade-in">
+      <div id="modal-icon" class="text-green-500 text-4xl mb-2">✅</div>
+      <h3 id="modal-title" class="text-xl font-semibold">兑换成功！</h3>
+      <p class="text-gray-600 mt-2" id="modal-message">已扣除积分。可在待收货中查看！</p>
+      <button onclick="closeModal()" class="mt-4 px-4 py-1 bg-green-500 text-white rounded-full hover:bg-green-600">
+        确定
+      </button>
+    </div>
+  </div>
+  
+  <style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.3s ease-out;
+    }
+  </style> 
+  <style>
+    @keyframes grow {
+      from { transform: scale(0.5); opacity: 0.5; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .animate-grow {
+      animation: grow 1s ease-out;
+    }
+  </style>   
+
+  <!-- 积分兑换逻辑 -->
+  <script>
+    currentPoints = 6200;
+    const buttons = document.querySelectorAll(".exchange-btn");
+    
+    function openModal({ icon, title, message, success }) {
+      document.getElementById("modal-icon").textContent = icon;
+      document.getElementById("modal-icon").className = `text-4xl mb-2 ${success ? 'text-green-500' : 'text-red-500'}`;
+      document.getElementById("modal-title").textContent = title;
+      document.getElementById("modal-message").textContent = message;
+      document.getElementById("modal").classList.remove("hidden");
+      document.getElementById("modal").classList.add("flex");
+    }
+  
+    function closeModal() {
+      document.getElementById("modal").classList.add("hidden");
+      document.getElementById("modal").classList.remove("flex");
+    }
+  
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        const cost = parseInt(button.getAttribute("data-cost"));
+        const itemName = button.closest('.bg-white').querySelector('p.font-semibold').textContent;
+        
+        if (currentPoints >= cost) {
+          currentPoints -= cost;
+          pointsEl.textContent = currentPoints;
+          
+          // 保存订单记录
+          orders.push({
+            item: itemName,
+            cost: cost,
+            timestamp: new Date().toLocaleString()
+          });
+          orders.push({
+            item: '碳友专属种子礼包',
+            cost: 1000,
+            timestamp: new Date().toLocaleString()
+            });
+
+          
+          openModal({
+            icon: '✅',
+            title: '兑换成功！',
+            message: '已扣除 ' + cost + ' 积分, 请登记收货信息！',
+            success: true
+          });
+        } else {
+          openModal({
+            icon: '❌',
+            title: '兑换失败',
+            message: '积分不足，无法兑换。',
+            success: false
+          });
+        }
+      });
+    });
+  </script>
+  <!-- 信息登记表单弹窗 -->
+<div id="formModal" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg">
+      <h2 class="text-lg font-bold mb-4">登记收货信息</h2>
+      <form id="infoForm" class="space-y-4">
+        <div>
+          <label for="phone" class="block text-sm font-medium">联系电话</label>
+          <input type="text" name="phone" id="phone" required
+                 class="w-full mt-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-green-400" />
+        </div>
+        <div>
+          <label for="address" class="block text-sm font-medium">收货地址</label>
+          <input type="text" name="address" id="address" required
+                 class="w-full mt-1 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-green-400" />
+        </div>
+        <div class="flex justify-end space-x-2 pt-4">
+          <button type="button" id="cancelBtn" class="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">取消</button>
+          <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">提交</button>
+        </div>
+      </form>
+    </div>
+  </div>    
+</body>
+</html>

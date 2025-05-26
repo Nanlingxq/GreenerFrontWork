@@ -1,0 +1,241 @@
+.body{
+  background: linear-gradient(to bottom, darkgreen, rgb(195, 247, 195));
+  background-size: cover; /* 背景图像覆盖整个容器 */
+  background-attachment: fixed;
+  min-height: 100vh; /* 确保背景覆盖整个视口 */
+  box-sizing: border-box; /* 避免内边距和边框影响尺寸 */
+  background-repeat: repeat-y;
+}
+
+.bodyContainer {
+    display: flex;
+    width: 100%; 
+    height: 600px;
+    justify-content: space-between;
+}
+
+.imageContainer {
+    /* background-color: aqua;  */
+    height: 40%; 
+    overflow-y: hidden; 
+}
+
+.common-layout02 {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    height: 100vh;
+    margin: 0 auto;
+    width: 90%;
+  }
+
+.common-layout02 .el-header{
+    align-items: center;
+    text-align: center;    
+}
+
+.common-layout01 {
+    display:flex;   
+    margin: 0 auto;
+    width: 90%;
+    height: auto;
+}
+
+.guidedTour {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    text-align: center;
+    height: 800px;
+    margin: 0 auto;
+    width: 90%;
+    font-family: Arial, sans-serif;
+    border-color: transparent;
+    background-color: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+    gap: 10px;
+}
+
+.guidedTourTitle {
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+}
+
+.guidedTourHeader {
+    height: 12%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #128e71;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    
+  }
+.guidedTourIframe {
+    width: 100%;
+    height: 85%;
+}
+
+.guidedTourButton {
+    background-color: transparent;
+    color: #00aaff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+.guidedTourLogo{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.mainImage {
+    width: 60%; 
+    height: 100%; 
+    overflow-y: hidden;
+    object-fit: cover;
+}
+
+.mainImage .mainImageBox {
+    width: 100%;
+    height: 100%;
+    /* object-fit: cover; */
+}
+
+.title {
+    font-size: xx-large;
+    line-height: 1.5;
+    letter-spacing: 2px
+}
+
+.hint {
+    font-size: larger;
+    letter-spacing: 6px;
+}
+
+.header1 {
+    height: 100px; /* 设置适当的高度 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+.Homeicon {
+    width: 180px;
+    height: 180px;
+    justify-content: center;  
+    align-items: center; 
+}
+
+.discription1 {
+    font-size: x-large;
+}
+
+.discription2 {
+    font-size: x-large;
+}
+
+.column {
+    align-items: center;
+    justify-items: center;
+}
+
+.carousel {
+    height: 800px;
+}
+
+.header1 {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+  }
+  
+  .title-container {
+    text-align: center;
+    flex: 1;
+  }
+  
+  .user-info-box {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(46, 139, 87, 0.8);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 180px;
+    z-index: 1000;
+  }
+  
+  .user-info-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .user-stats {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  
+  .carbon-points {
+    color: #67C23A;
+    font-weight: 500;
+  }
+  
+  .elapsed-time {
+    color: #909399;
+  }
+  
+  .signin-btn {
+    width: 100%;
+    padding: 8px 0;
+  }
+  
+  .signin-dialog {
+    /* 设置对话框总高度 */
+    height: 250px;
+    min-height: 400px;
+    display: flex !important;
+    flex-direction: column;
+  }
+  
+  /* 修正Element UI内部容器结构 */
+  .signin-dialog > .el-dialog__header {
+    flex-shrink: 0;
+  }
+  
+  .signin-dialog > .el-dialog__body {
+    flex: 1;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  
+  .dialog-root-container {
+    height: 100%;
+    position: relative;
+  }
+  
+  .dialog-root-container iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }

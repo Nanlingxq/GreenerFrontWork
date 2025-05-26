@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>评价留言板</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #e8f5e9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 128, 0, 0.15);
+    }
+
+    h2 {
+      color: #2e7d32;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #388e3c;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #a5d6a7;
+      border-radius: 6px;
+      margin-top: 5px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #43a047;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #2e7d32;
+    }
+
+    .comments {
+      margin-top: 30px;
+      border-top: 1px solid #c8e6c9;
+      padding-top: 20px;
+    }
+
+    .comment {
+      background-color: #f1f8e9;
+      border-left: 5px solid #66bb6a;
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      border-radius: 5px;
+    }
+
+    .comment strong {
+      color: #33691e;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.8); /* 背景色，可根据需求调整透明度 */
+      padding: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>留言评价板</h2>
+    <form id="commentForm">
+      <label for="name">您的昵称：</label>
+      <input type="text" id="name" required>
+
+      <label for="comment">您的评价：</label>
+      <textarea id="comment" required></textarea>
+
+      <button type="submit">提交评价</button>
+    </form>
+
+    <div class="comments" id="commentsSection">
+      <h3>他人评价：</h3>
+      <!-- 评价会显示在这里 -->
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("commentForm");
+    const commentsSection = document.getElementById("commentsSection");
+
+    // 从 localStorage 获取已保存的评论并显示
+    function loadComments() {
+      const savedComments = JSON.parse(localStorage.getItem("comments") || "[]");
+      savedComments.forEach(comment => {
+        const commentBox = document.createElement("div");
+        commentBox.className = "comment";
+        commentBox.innerHTML = `<strong>${comment.name}</strong><p>${comment.comment}</p>`;
+        commentsSection.appendChild(commentBox);
+      });
+    }
+
+    // 提交表单时保存评论到 localStorage
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const comment = document.getElementById("comment").value.trim();
+
+      if (name && comment) {
+        const newComment = { name, comment };
+        
+        // 获取现有的评论，添加新的评论并保存到 localStorage
+        const savedComments = JSON.parse(localStorage.getItem("comments") || "[]");
+        savedComments.push(newComment);
+        localStorage.setItem("comments", JSON.stringify(savedComments));
+
+        // 显示新评论
+        const commentBox = document.createElement("div");
+        commentBox.className = "comment";
+        commentBox.innerHTML = `<strong>${name}</strong><p>${comment}</p>`;
+        commentsSection.appendChild(commentBox);
+
+        // 清空表单
+        form.reset();
+      }
+    });
+
+    // 页面加载时加载评论
+    loadComments();
+  </script>
+     <div class="footer">
+        <p>© 2025 清风e路，碳享出行——长三角交通碳减排数字赋能平台</p>
+    </div>
+</body>
+</html>

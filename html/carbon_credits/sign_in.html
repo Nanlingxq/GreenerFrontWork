@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>碳积分系统 - 签到功能</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        .calendar-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .signed::after {
+            content: "✅";
+            font-size: 0.75rem;
+            position: absolute;
+            top: 2px;
+            right: 4px;
+        }
+        .sign-animation {
+            animation: flyUp 0.8s ease-out forwards;
+        }
+        @keyframes flyUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- 签到按钮 -->
+<button id="openSignInBtn" class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-full shadow-xl z-50 animate-bounce text-lg flex items-center space-x-2">
+    <span>📅</span><span>每日签到</span>
+</button>
+
+<!-- 签到弹窗 -->
+<div id="signInModal" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden animate__animated animate__fadeIn">
+    <div class="bg-white rounded-2xl shadow-2xl calendar-container p-6 relative">
+        <button id="closeSignIn" class="absolute top-4 right-4 text-gray-400 hover:text-red-400 text-2xl">×</button>
+        <h2 class="text-2xl font-bold text-green-600 text-center mb-2">🌿 每日签到</h2>
+        <p class="text-sm text-gray-500 text-center mb-4">坚持签到解锁更多碳积分奖励</p>
+
+        <!-- 月份切换 -->
+        <div class="flex justify-between items-center mb-4">
+            <button id="prevMonth" class="text-green-500 hover:text-green-700 text-xl px-2">←</button>
+            <div id="monthLabel" class="text-lg font-semibold text-green-700"></div>
+            <button id="nextMonth" class="text-green-500 hover:text-green-700 text-xl px-2">→</button>
+        </div>
+
+        <!-- 星期栏 -->
+        <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-gray-400">
+            <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+        </div>
+
+        <!-- 日历网格 -->
+        <div id="calendarGrid" class="grid grid-cols-7 gap-2 mb-5"></div>
+
+        <!-- 奖励提示 -->
+        <div id="rewardAlert" class="hidden absolute left-1/2 transform -translate-x-1/2 top-3 bg-green-100 border border-green-300 text-green-700 text-sm px-4 py-2 rounded-full shadow-lg sign-animation">
+            🎉 签到成功，获得 <span id="rewardPoints">+15</span> 碳积分！
+        </div>
+
+        <!-- 非今日提示 -->
+        <div id="tipAlert" class="hidden text-sm text-red-500 text-center mt-2">⚠️ 只能签到今天哦！</div>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('signInModal');
+    const openBtn = document.getElementById('openSignInBtn');
+    const closeBtn = document.getElementById('closeSignIn');
+    const calendarGrid = document.getElementById('calendarGrid');
+    const monthLabel = document.getElementById('monthLabel');
+    const rewardAlert = document.getElementById('rewardAlert');
+    const tipAlert = document.getElementById('tipAlert');
+
+    const todayDate = new Date();
+    const today = todayDate.getDate();
+    const thisMonth = todayDate.getMonth();
+    const thisYear = todayDate.getFullYear();
+    const todayKey = `${thisYear}-${thisMonth}-${today}`;
+
+    let signedDays = JSON.parse(localStorage.getItem('signedDays')) || [];
+    signedDays = signedDays.filter(key => key !== todayKey);
+    localStorage.setItem('signedDays', JSON.stringify(signedDays));
+
+    let currentYear = thisYear;
+    let currentMonth = thisMonth;
+    let fakeSignedDays = new Set();
+
+    function generateFakeSignedDays(year, month) {
+        fakeSignedDays = new Set();
+        if (year === thisYear && month === thisMonth) {
+            const maxFake = 4 + Math.floor(Math.random() * 3);
+            while (fakeSignedDays.size < maxFake) {
+                const fakeDay = 1 + Math.floor(Math.random() * (today - 1));
+                const key = `${year}-${month}-${fakeDay}`;
+                if (!signedDays.includes(key)) {
+                    fakeSignedDays.add(key);
+                }
+            }
+        }
+    }
+
+    function renderCalendar() {
+        calendarGrid.innerHTML = '';
+        tipAlert.classList.add('hidden');
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        monthLabel.textContent = `${currentYear}年${currentMonth + 1}月`;
+
+        for (let i = 0; i < 42; i++) {
+            const day = i - firstDay + 1;
+            const date = new Date(currentYear, currentMonth, day);
+            const isCurrentMonth = date.getMonth() === currentMonth;
+            const isToday = day === today && currentMonth === thisMonth && currentYear === thisYear;
+            const key = `${currentYear}-${currentMonth}-${day}`;
+            const isSigned = signedDays.includes(key);
+            const isFakeSigned = fakeSignedDays.has(key);
+
+            const div = document.createElement('div');
+
+            let baseStyle = '';
+            if (!isCurrentMonth) {
+                baseStyle = 'text-gray-300 bg-gray-100 cursor-default';
+            } else if (isSigned || isFakeSigned) {
+                baseStyle = 'signed bg-green-100 border-green-200';
+            } else {
+                baseStyle = 'bg-white text-gray-700 hover:bg-green-50';
+            }
+
+            if (isToday && !isSigned) {
+                baseStyle = baseStyle.replace('signed', '');
+            }
+
+            div.className = `relative w-10 h-10 flex items-center justify-center rounded-md border text-sm cursor-pointer
+                ${baseStyle} ${isToday ? 'font-bold border-green-400' : 'border-gray-200'}`;
+
+            if (isCurrentMonth && day > 0 && day <= daysInMonth) {
+                div.textContent = day;
+                div.dataset.day = day;
+            }
+
+            calendarGrid.appendChild(div);
+        }
+    }
+
+    function handleSignIn(day) {
+        const key = `${currentYear}-${currentMonth}-${day}`;
+        if (signedDays.includes(key)) return;
+
+        if (key !== todayKey) {
+            tipAlert.classList.remove('hidden');
+            setTimeout(() => tipAlert.classList.add('hidden'), 3000);
+            return;
+        }
+
+        signedDays.push(key);
+        localStorage.setItem('signedDays', JSON.stringify(signedDays));
+        rewardAlert.classList.remove('hidden');
+        rewardAlert.classList.add('sign-animation');
+
+        setTimeout(() => {
+            rewardAlert.classList.add('hidden');
+            rewardAlert.classList.remove('sign-animation');
+        }, 2000);
+
+        renderCalendar();
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        generateFakeSignedDays(currentYear, currentMonth);
+        renderCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        generateFakeSignedDays(currentYear, currentMonth);
+        renderCalendar();
+    });
+
+    openBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        generateFakeSignedDays(currentYear, currentMonth);
+        renderCalendar();
+    });
+
+    closeBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
+    calendarGrid.addEventListener('click', (e) => {
+        if (e.target.dataset.day) {
+            handleSignIn(Number(e.target.dataset.day));
+        }
+    });
+</script>
+</body>
+</html>

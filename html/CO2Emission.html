@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据故事可视化 - Flourish</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ffffff; /* 已修改为白色背景（原值为 #1a1a1a） */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 故事容器 */
+        .story-container {
+            width: 100%;
+            max-width: 1440px;
+            padding: 20px;
+            margin: 40px 0;
+        }
+
+        /* Flourish 原生适配 */
+        .flourish-embed {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- 故事内容容器 -->
+    <div class="story-container">
+        <div class="flourish-embed" data-src="story/2930991">
+            <script src="https://public.flourish.studio/resources/embed.js"></script>
+            <noscript>
+                <img src="https://public.flourish.studio/story/2930991/thumbnail" 
+                     width="100%" 
+                     alt="数据故事可视化"
+                     style="border: 2px solid #333;"/>
+            </noscript>
+        </div>
+    </div>
+</body>
+</html>

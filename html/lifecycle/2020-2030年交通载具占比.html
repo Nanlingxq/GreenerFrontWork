@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态数据图表 - Flourish</title>
+    <style>
+        /* 基础重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 主体布局 */
+        body {
+            background: transparent;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* 图表容器 */
+        .chart-wrapper {
+            width: 95%;
+            max-width: 1200px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        /* Flourish 原生适配 */
+        .flourish-embed {
+            position: relative;
+            min-height: 400px;  /* 防止布局偏移 */
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-wrapper">
+        <div class="flourish-embed flourish-chart" data-src="visualisation/22905181">
+            <script src="https://public.flourish.studio/resources/embed.js"></script>
+            <noscript>
+                <img src="https://public.flourish.studio/visualisation/22905181/thumbnail" 
+                     width="100%" 
+                     alt="数据可视化图表"
+                     style="border: 1px solid #ddd;
+                            padding: 8px;
+                            background: #fff;">
+            </noscript>
+        </div>
+    </div>
+</body>
+</html>
